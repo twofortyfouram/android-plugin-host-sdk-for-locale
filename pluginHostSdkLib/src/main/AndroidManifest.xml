@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.twofortyfouram.locale.sdk.host">
+
+    <permission
+        android:name="${applicationId}.com.twofortyfouram.locale.sdk.host.permission.internal"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="${applicationId}.com.twofortyfouram.locale.sdk.host.permission.internal" />
+
+    <application />
+
+</manifest>

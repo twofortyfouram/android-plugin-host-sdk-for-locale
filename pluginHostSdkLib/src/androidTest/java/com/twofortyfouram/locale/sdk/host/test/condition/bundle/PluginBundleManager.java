@@ -20,13 +20,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.twofortyfouram.assertion.Assertions;
 import com.twofortyfouram.assertion.BundleAssertions;
 import com.twofortyfouram.locale.api.Intent;
+import com.twofortyfouram.locale.sdk.client.receiver.AbstractPluginConditionReceiver;
 import com.twofortyfouram.log.Lumberjack;
 import com.twofortyfouram.spackle.AppBuildInfo;
 
 import net.jcip.annotations.ThreadSafe;
+
+import static com.twofortyfouram.assertion.Assertions.assertInRangeInclusive;
+import static com.twofortyfouram.assertion.Assertions.assertNotNull;
 
 @ThreadSafe
 public final class PluginBundleManager {
@@ -93,9 +96,9 @@ public final class PluginBundleManager {
      */
     @NonNull
     public static Bundle generateBundle(@NonNull final Context context,
-            final int resultCode) {
-        Assertions.assertNotNull(context, "context"); //$NON-NLS-1$
-        Assertions.assertInRangeInclusive(resultCode,
+            @AbstractPluginConditionReceiver.ConditionResult final int resultCode) {
+        assertNotNull(context, "context"); //$NON-NLS-1$
+        assertInRangeInclusive(resultCode,
                 Intent.RESULT_CONDITION_SATISFIED,
                 Intent.RESULT_CONDITION_UNKNOWN,
                 "resultCode"); //$NON-NLS-1$
@@ -109,11 +112,20 @@ public final class PluginBundleManager {
 
     /**
      * @param bundle A valid plug-in bundle.
-     * @return The result code inside the plug-in bundle.  Will return 0 if the result code does not
-     * exist in {@code bundle}.
+     * @return The result code inside the plug-in bundle.  Will return
+     * {@link Intent#RESULT_CONDITION_UNKNOWN} if the result code does not exist in {@code bundle}.
      */
+    @AbstractPluginConditionReceiver.ConditionResult
     public static int getResultCode(@NonNull final Bundle bundle) {
-        return bundle.getInt(BUNDLE_EXTRA_INT_RESULT_CODE);
+        final int resultCode = bundle
+                .getInt(BUNDLE_EXTRA_INT_RESULT_CODE, Intent.RESULT_CONDITION_UNKNOWN);
+
+        assertInRangeInclusive(resultCode,
+                Intent.RESULT_CONDITION_SATISFIED,
+                Intent.RESULT_CONDITION_UNKNOWN,
+                "resultCode"); //$NON-NLS-1$
+
+        return resultCode;
     }
 
     /**

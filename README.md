@@ -25,7 +25,7 @@ The build.gradle repositories section would look something like the following:
 And the dependencies section would look something like this:
     
     dependencies {
-        compile group:'com.twofortyfouram', name:'android-plugin-host-sdk-for-locale', version:'[1.0.0,2.0['
+        compile group:'com.twofortyfouram', name:'android-plugin-host-sdk-for-locale', version:'[2.0.0,3.0['
     }
 
 
@@ -46,3 +46,8 @@ To edit a Plugin, the host instantiates a subclass of [AbstractPluginEditFragmen
 The host fires PluginInstanceData to a plug-in, via one of the two controller objects [Condition](http://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/api/Condition.html) or [Setting](http://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/api/Setting.html).
 
 PluginInstanceData has getters for [getType()](http://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/model/PluginType.html) and [getRegistryName()](http://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/model/PluginInstanceData.html#getRegistryName--).  Those two getters provide the keys necessary to look up the associated Plugin from the PluginRegistry, enabling the host to instantiate [Condition](http://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/api/Condition.html) or [Setting](http://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/api/Setting.html).
+
+# History
+* 1.0.0: Initial release
+* 2.0.0
+    * Update transitive dependency on [plug-in-client-sdk-for-locale](http://twofortyfouram.github.io/android-plugin-client-sdk-for-locale) to a major new version.  Although the host SDK APIs didn't change, the dependency change could break downstream clients hence a major new version.

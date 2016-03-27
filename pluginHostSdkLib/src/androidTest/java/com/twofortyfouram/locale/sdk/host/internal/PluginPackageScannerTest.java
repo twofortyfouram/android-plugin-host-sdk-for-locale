@@ -19,190 +19,235 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
 import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.twofortyfouram.locale.sdk.host.model.PluginType;
 import com.twofortyfouram.spackle.AppBuildInfo;
 import com.twofortyfouram.test.assertion.MoarAsserts;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.util.Collection;
 
-public final class PluginPackageScannerTest extends AndroidTestCase {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
+@RunWith(AndroidJUnit4.class)
+public final class PluginPackageScannerTest {
 
     @SmallTest
-    public void testNonInstantiable() {
+    @Test
+    public void nonInstantiable() {
         MoarAsserts.assertNoninstantiable(PluginPackageScanner.class);
     }
 
     @SmallTest
-    public void testFindActivities_conditions() {
-        final Collection<ResolveInfo> infos = PluginPackageScanner.findActivities(getContext(),
+    @Test
+    public void findActivities_conditions() {
+        final Collection<ResolveInfo> infos = PluginPackageScanner.findActivities(
+                InstrumentationRegistry.getContext(),
                 PluginType.CONDITION, null);
-        assertNotNull(infos);
-        assertTrue(1 <= infos.size());
+        assertThat(infos, notNullValue());
+        assertThat(infos.size(), greaterThanOrEqualTo(1));
     }
 
     @SmallTest
-    public void testFindActivities_settings() {
-        final Collection<ResolveInfo> infos = PluginPackageScanner.findActivities(getContext(),
-                PluginType.SETTING, null);
-        assertNotNull(infos);
-        assertTrue(1 <= infos.size());
+    @Test
+    public void findActivities_settings() {
+        final Collection<ResolveInfo> infos = PluginPackageScanner
+                .findActivities(InstrumentationRegistry.getContext(),
+                        PluginType.SETTING, null);
+        assertThat(infos, notNullValue());
+        assertThat(infos.size(), greaterThanOrEqualTo(1));
     }
 
     @SmallTest
-    public void testFindActivities_debug_condition() {
-        final Collection<ResolveInfo> infos = PluginPackageScanner.findActivities(getContext(),
-                PluginType.CONDITION, getContext().getPackageName());
-        assertNotNull(infos);
-        assertEquals(1, infos.size());
+    @Test
+    public void findActivities_debug_condition() {
+        final Collection<ResolveInfo> infos = PluginPackageScanner
+                .findActivities(InstrumentationRegistry.getContext(),
+                        PluginType.CONDITION,
+                        InstrumentationRegistry.getContext().getPackageName());
+        assertThat(infos, notNullValue());
+        assertThat(infos.size(), is(1));
     }
 
     @SmallTest
-    public void testFindActivities_debug_setting() {
-        final Collection<ResolveInfo> infos = PluginPackageScanner.findActivities(getContext(),
-                PluginType.SETTING, getContext().getPackageName());
-        assertNotNull(infos);
-        assertEquals(1, infos.size());
+    @Test
+    public void findActivities_debug_setting() {
+        final Collection<ResolveInfo> infos = PluginPackageScanner
+                .findActivities(InstrumentationRegistry.getContext(),
+                        PluginType.SETTING, InstrumentationRegistry.getContext().getPackageName());
+        assertThat(infos, notNullValue());
+        assertThat(infos.size(), is(1));
     }
 
     @SmallTest
-    public void testFindReceivers_conditions() {
-        final Collection<ResolveInfo> infos = PluginPackageScanner.findReceivers(getContext(),
-                PluginType.CONDITION, null);
-        assertNotNull(infos);
-        assertTrue(1 <= infos.size());
+    @Test
+    public void findReceivers_conditions() {
+        final Collection<ResolveInfo> infos = PluginPackageScanner
+                .findReceivers(InstrumentationRegistry.getContext(),
+                        PluginType.CONDITION, null);
+        assertThat(infos, notNullValue());
+        assertThat(infos.size(), greaterThanOrEqualTo(1));
     }
 
     @SmallTest
-    public void testFindReceivers_settings() {
-        final Collection<ResolveInfo> infos = PluginPackageScanner.findReceivers(getContext(),
-                PluginType.SETTING, null);
-        assertNotNull(infos);
-        assertTrue(1 <= infos.size());
+    @Test
+    public void findReceivers_settings() {
+        final Collection<ResolveInfo> infos = PluginPackageScanner
+                .findReceivers(InstrumentationRegistry.getContext(),
+                        PluginType.SETTING, null);
+        assertThat(infos, notNullValue());
+        assertThat(infos.size(), greaterThanOrEqualTo(1));
     }
 
     @SmallTest
-    public void testFindReceivers_debug_condition() {
-        final Collection<ResolveInfo> infos = PluginPackageScanner.findReceivers(getContext(),
-                PluginType.CONDITION, getContext().getPackageName());
-        assertNotNull(infos);
-        assertEquals(1, infos.size());
+    @Test
+    public void findReceivers_debug_condition() {
+        final Collection<ResolveInfo> infos = PluginPackageScanner
+                .findReceivers(InstrumentationRegistry.getContext(),
+                        PluginType.CONDITION,
+                        InstrumentationRegistry.getContext().getPackageName());
+        assertThat(infos, notNullValue());
+        assertThat(infos.size(), is(1));
     }
 
     @SmallTest
-    public void testFindReceivers_debug_setting() {
-        final Collection<ResolveInfo> infos = PluginPackageScanner.findReceivers(getContext(),
-                PluginType.SETTING, getContext().getPackageName());
-        assertNotNull(infos);
-        assertEquals(1, infos.size());
+    @Test
+    public void findReceivers_debug_setting() {
+        final Collection<ResolveInfo> infos = PluginPackageScanner
+                .findReceivers(InstrumentationRegistry.getContext(),
+                        PluginType.SETTING, InstrumentationRegistry.getContext().getPackageName());
+        assertThat(infos, notNullValue());
+        assertThat(infos.size(), is(1));
     }
 
     @SmallTest
-    public void testGetVersionCode_unknown() {
-        final int actualVersionCode = PluginPackageScanner.getVersionCode(getContext()
-                .getPackageManager(), "com.twofortyfouram.locale.bork"); //$NON-NLS-1$
+    @Test
+    public void getVersionCode_unknown() {
+        final int actualVersionCode = PluginPackageScanner
+                .getVersionCode(InstrumentationRegistry.getContext()
+                        .getPackageManager(), "com.twofortyfouram.locale.bork"); //$NON-NLS-1$
 
-        assertEquals(-1, actualVersionCode);
+        assertThat(actualVersionCode, is(-1));
     }
 
     @SmallTest
-    public void testGetVersionCode_known() {
-        final int expectedVersionCode = AppBuildInfo.getVersionCode(getContext());
-        final int actualVersionCode = PluginPackageScanner.getVersionCode(getContext()
-                .getPackageManager(), getContext().getPackageName());
+    @Test
+    public void getVersionCode_known() {
+        final int expectedVersionCode = AppBuildInfo
+                .getVersionCode(InstrumentationRegistry.getContext());
+        final int actualVersionCode = PluginPackageScanner
+                .getVersionCode(InstrumentationRegistry.getContext()
+                                .getPackageManager(),
+                        InstrumentationRegistry.getContext().getPackageName());
 
-        assertEquals(expectedVersionCode, actualVersionCode);
+        assertThat(actualVersionCode, is(expectedVersionCode));
     }
 
     @SmallTest
-    public void testIsTargetSdkCorrect_true() {
-        assertTrue(PluginPackageScanner
-                .isTargetSdkCorrect(getContext(), getResolveInfoWithTargetSdkVersion(getContext()
-                        .getApplicationInfo().targetSdkVersion)));
+    @Test
+    public void isTargetSdkCorrect_true() {
+        assertThat(PluginPackageScanner
+                .isTargetSdkCorrect(InstrumentationRegistry.getContext(),
+                        getResolveInfoWithTargetSdkVersion(InstrumentationRegistry.getContext()
+                                .getApplicationInfo().targetSdkVersion)), is(true));
     }
 
     @SmallTest
-    public void testIsTargetSdkCorrect_false() {
-        assertFalse(PluginPackageScanner
-                .isTargetSdkCorrect(getContext(), getResolveInfoWithTargetSdkVersion(getContext()
-                        .getApplicationInfo().targetSdkVersion - 1)));
+    @Test
+    public void isTargetSdkCorrect_false() {
+        assertThat(PluginPackageScanner
+                .isTargetSdkCorrect(InstrumentationRegistry.getContext(),
+                        getResolveInfoWithTargetSdkVersion(InstrumentationRegistry.getContext()
+                                .getApplicationInfo().targetSdkVersion - 1)), is(false));
     }
 
     @SmallTest
-    public void testIsApplicationEnabled_true() {
-        assertTrue(PluginPackageScanner
-                .isApplicationEnabled(getResolveInfoWithApplicationEnabled(true)));
+    @Test
+    public void isApplicationEnabled_true() {
+        assertThat(PluginPackageScanner
+                .isApplicationEnabled(getResolveInfoWithApplicationEnabled(true)), is(true));
     }
 
     @SmallTest
-    public void testIsApplicationEnabled_false() {
-        assertFalse(PluginPackageScanner
-                .isApplicationEnabled(getResolveInfoWithApplicationEnabled(false)));
+    @Test
+    public void isApplicationEnabled_false() {
+        assertThat(PluginPackageScanner
+                .isApplicationEnabled(getResolveInfoWithApplicationEnabled(false)), is(false));
     }
 
     @SmallTest
-    public void testIsComponentEnabled_true() {
-        assertTrue(
-                PluginPackageScanner.isComponentEnabled(getResolveInfoWithActivityEnabled(true)));
+    @Test
+    public void isComponentEnabled_true() {
+        assertThat(
+                PluginPackageScanner.isComponentEnabled(getResolveInfoWithActivityEnabled(true)),
+                is(true));
     }
 
     @SmallTest
-    public void testIsComponentEnabled_false() {
-        assertFalse(PluginPackageScanner
-                .isComponentEnabled(getResolveInfoWithActivityEnabled(false)));
+    @Test
+    public void isComponentEnabled_false() {
+        assertThat(PluginPackageScanner
+                .isComponentEnabled(getResolveInfoWithActivityEnabled(false)), is(false));
     }
 
     @SmallTest
-    public void testIsComponentExported_true() {
-        assertTrue(PluginPackageScanner
-                .isComponentExported(getResolveInfoWithActivityExported(true)));
+    @Test
+    public void isComponentExported_true() {
+        assertThat(PluginPackageScanner
+                .isComponentExported(getResolveInfoWithActivityExported(true)), is(true));
     }
 
     @SmallTest
-    public void testIsComponentExported_false() {
-        assertFalse(PluginPackageScanner
-                .isComponentExported(getResolveInfoWithActivityExported(false)));
+    @Test
+    public void isComponentExported_false() {
+        assertThat(PluginPackageScanner
+                .isComponentExported(getResolveInfoWithActivityExported(false)), is(false));
     }
 
     @SmallTest
-    public void testIsComponentPermissionGranted_true() {
-        assertTrue(PluginPackageScanner.isComponentPermissionGranted(getContext(),
-                getResolveInfoWithPermission(null)));
+    @Test
+    public void isComponentPermissionGranted_true() {
+        assertThat(PluginPackageScanner
+                .isComponentPermissionGranted(InstrumentationRegistry.getContext(),
+                        getResolveInfoWithPermission(null)), is(true));
     }
 
     @SmallTest
-    public void testIsComponentPermissionGranted_false() {
-        assertFalse(PluginPackageScanner.isComponentPermissionGranted(getContext(),
-                getResolveInfoWithPermission(
-                        "com.nefarious.app.permission.NO_SOUP_FOR_YOU")
-        )); //$NON-NLS-1$
+    @Test
+    public void isComponentPermissionGranted_false() {
+        assertThat(PluginPackageScanner
+                .isComponentPermissionGranted(InstrumentationRegistry.getContext(),
+                        getResolveInfoWithPermission(
+                                "com.nefarious.app.permission.NO_SOUP_FOR_YOU")
+                ), is(false)); //$NON-NLS-1$
     }
 
     @SmallTest
-    public void testIsInstallLocationCorrect_internal() {
-        assertTrue(PluginPackageScanner.isInstallLocationCorrect(getContext(),
-                getResolveInfoWithInstallLocation(false)));
+    @Test
+    public void isInstallLocationCorrect_internal() {
+        assertThat(
+                PluginPackageScanner.isInstallLocationCorrect(InstrumentationRegistry.getContext(),
+                        getResolveInfoWithInstallLocation(false)), is(true));
     }
 
     @SmallTest
-    public void testIsInstallLocationCorrect_external() {
-        assertFalse(PluginPackageScanner.isInstallLocationCorrect(getContext(),
-                getResolveInfoWithInstallLocation(true)));
+    @Test
+    public void isInstallLocationCorrect_external() {
+        assertThat(
+                PluginPackageScanner.isInstallLocationCorrect(InstrumentationRegistry.getContext(),
+                        getResolveInfoWithInstallLocation(true)), is(false));
     }
-
-    // @SmallTest
-    // public void testIsPluginValid() {
-    // final ResolveInfo activityResolveInfo = new ResolveInfo();
-    // final List<ResolveInfo> receiverResolveInfos = new LinkedList<ResolveInfo>();
-    //
-    // assertTrue(PluginPackageScanner.isPluginValid(getContext(), PluginType.CONDITION,
-    // activityResolveInfo, receiverResolveInfos))
-    // }
 
     @NonNull
-    private ResolveInfo getResolveInfoWithTargetSdkVersion(final int targetSdkVersion) {
+    private static ResolveInfo getResolveInfoWithTargetSdkVersion(final int targetSdkVersion) {
         final ResolveInfo info = new ResolveInfo();
         info.activityInfo = new ActivityInfo();
         info.activityInfo.applicationInfo = new ApplicationInfo();
@@ -211,7 +256,7 @@ public final class PluginPackageScannerTest extends AndroidTestCase {
     }
 
     @NonNull
-    private ResolveInfo getResolveInfoWithApplicationEnabled(final boolean isApplicationEnabled) {
+    private static ResolveInfo getResolveInfoWithApplicationEnabled(final boolean isApplicationEnabled) {
         final ResolveInfo info = new ResolveInfo();
         info.activityInfo = new ActivityInfo();
         info.activityInfo.applicationInfo = new ApplicationInfo();
@@ -220,7 +265,7 @@ public final class PluginPackageScannerTest extends AndroidTestCase {
     }
 
     @NonNull
-    private ResolveInfo getResolveInfoWithActivityEnabled(final boolean isActivityEnabled) {
+    private static ResolveInfo getResolveInfoWithActivityEnabled(final boolean isActivityEnabled) {
         final ResolveInfo info = new ResolveInfo();
         info.activityInfo = new ActivityInfo();
         info.activityInfo.enabled = isActivityEnabled;
@@ -228,7 +273,7 @@ public final class PluginPackageScannerTest extends AndroidTestCase {
     }
 
     @NonNull
-    private ResolveInfo getResolveInfoWithActivityExported(final boolean isActivityExported) {
+    private static ResolveInfo getResolveInfoWithActivityExported(final boolean isActivityExported) {
         final ResolveInfo info = new ResolveInfo();
         info.activityInfo = new ActivityInfo();
         info.activityInfo.exported = isActivityExported;
@@ -236,7 +281,7 @@ public final class PluginPackageScannerTest extends AndroidTestCase {
     }
 
     @NonNull
-    private ResolveInfo getResolveInfoWithPermission(final String permissionString) {
+    private static ResolveInfo getResolveInfoWithPermission(final String permissionString) {
         final ResolveInfo info = new ResolveInfo();
         info.activityInfo = new ActivityInfo();
         info.activityInfo.permission = permissionString;
@@ -248,7 +293,7 @@ public final class PluginPackageScannerTest extends AndroidTestCase {
         final ResolveInfo info = new ResolveInfo();
         info.activityInfo = new ActivityInfo();
         info.activityInfo.applicationInfo = new ApplicationInfo();
-        info.activityInfo.packageName = getContext().getPackageName();
+        info.activityInfo.packageName = InstrumentationRegistry.getContext().getPackageName();
         info.activityInfo.applicationInfo.flags = isExternal ? ApplicationInfo.FLAG_EXTERNAL_STORAGE
                 : 0;
         return info;

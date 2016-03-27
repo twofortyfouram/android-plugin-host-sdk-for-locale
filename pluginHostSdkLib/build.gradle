@@ -16,7 +16,8 @@ dependencies {
     compile group:'com.twofortyfouram', name:'android-spackle', version:"${TWOFORTYFOURAM_SPACKLE_VERSION_MATCHER}"
     compile group:'net.jcip', name:'jcip-annotations', version:"${JCIP_ANNOTATIONS_VERSION_MATCHER}"
 
-    androidTestCompile group:'com.android.support.test', name:'testing-support-lib', version:"${ANDROID_SUPPORT_TEST_VERSION_MATCHER}"
+    androidTestCompile group:'com.android.support.test.espresso', name:'espresso-core', version:"${ESPRESSO_CORE_VERSION_MATCHER}"
+    androidTestCompile group:'com.android.support.test.espresso', name:'espresso-intents', version:"${ESPRESSO_INTENTS_VERSION_MATCHER}"
     androidTestCompile group:'com.twofortyfouram', name:'android-test', version:"${TWOFORTYFOURAM_TEST_VERSION_MATCHER}"
 }
 

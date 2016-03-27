@@ -18,30 +18,38 @@ package com.twofortyfouram.locale.sdk.host.api;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.twofortyfouram.locale.sdk.host.internal.BundleSerializer;
 import com.twofortyfouram.locale.sdk.host.model.Plugin;
-import com.twofortyfouram.locale.sdk.host.model.PluginConfigurationTest;
 import com.twofortyfouram.locale.sdk.host.model.PluginInstanceData;
 import com.twofortyfouram.locale.sdk.host.model.PluginType;
+import com.twofortyfouram.locale.sdk.host.test.fixture.PluginConfigurationFixture;
 import com.twofortyfouram.test.context.ReceiverContextWrapper;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Collection;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
-/**
- * Tests {@link Setting}.
- */
-public final class SettingTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public final class SettingTest {
 
     @SmallTest
-    public void testFire_intent() {
-        final ReceiverContextWrapper context = new ReceiverContextWrapper(getContext());
+    @Test
+    public void fire_intent() {
+        final ReceiverContextWrapper context = new ReceiverContextWrapper(
+                InstrumentationRegistry.getContext());
 
         final Setting setting = new Setting(context, new Plugin(PluginType.SETTING,
-                "foo", "bar", "baz", 1, PluginConfigurationTest
+                "foo", "bar", "baz", 1, PluginConfigurationFixture
                 .newPluginConfiguration()
         )); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
@@ -62,27 +70,29 @@ public final class SettingTest extends AndroidTestCase {
 
         final Collection<ReceiverContextWrapper.SentIntent> intents = context
                 .getAndClearSentIntents();
-        assertEquals(2, intents.size());
+        assertThat(intents.size(), is(2));
 
         for (final ReceiverContextWrapper.SentIntent sentIntent : intents) {
-            assertFalse(sentIntent.getIsSticky());
-            assertNull(sentIntent.getPermission());
+            assertThat(sentIntent.getIsSticky(), is(false));
+            assertThat(sentIntent.getPermission(), nullValue());
 
             final Intent intent = sentIntent.getIntent();
 
-            assertEquals(com.twofortyfouram.locale.api.Intent.ACTION_FIRE_SETTING,
-                    intent.getAction());
-            assertEquals(new ComponentName("foo", "baz"),
-                    intent.getComponent()); //$NON-NLS-1$ //$NON-NLS-2$
-            assertNotNull(intent.getExtras());
-            assertEquals(1, intent.getExtras().size());
-            assertTrue(intent.hasExtra(com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE));
+            assertThat(intent.getAction(),
+                    is(com.twofortyfouram.locale.api.Intent.ACTION_FIRE_SETTING));
+            assertThat(intent.getComponent(),
+                    is(new ComponentName("foo", "baz"))); //$NON-NLS-1$ //$NON-NLS-2$
+            assertThat(intent.getExtras(), notNullValue());
+            assertThat(intent.getExtras().size(), is(1));
+            assertThat(intent.hasExtra(com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE),
+                    is(true));
 
             final Bundle extraBundle = intent
                     .getBundleExtra(com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE);
 
-            assertEquals(1, extraBundle.size());
-            assertEquals("test_value", extraBundle.get("test_key")); //$NON-NLS-1$//$NON-NLS-2$
+            assertThat(extraBundle.size(), is(1));
+            assertThat((String) extraBundle.get("test_key"),
+                    is("test_value")); //$NON-NLS-1$//$NON-NLS-2$
         }
     }
 }

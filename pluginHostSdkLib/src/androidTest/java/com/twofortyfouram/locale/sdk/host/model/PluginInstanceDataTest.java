@@ -1,6 +1,6 @@
 /*
  * android-plugin-host-sdk-for-locale https://github.com/twofortyfouram/android-plugin-host-sdk-for-locale
- * Copyright 2015 two forty four a.m. LLC
+ * Copyright 2015-2016 two forty four a.m. LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -15,125 +15,150 @@
 
 package com.twofortyfouram.locale.sdk.host.model;
 
-import android.os.Bundle;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
-import android.test.MoreAsserts;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
-import com.twofortyfouram.locale.sdk.host.internal.BundleSerializer;
+import com.twofortyfouram.locale.sdk.host.test.fixture.PluginInstanceDataFixture;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.util.Arrays;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
-public final class PluginInstanceDataTest extends TestCase {
+@RunWith(AndroidJUnit4.class)
+public final class PluginInstanceDataTest {
 
-    @NonNull
-    private static final PluginType DEFAULT_TYPE = PluginType.SETTING;
+    @SmallTest
+    @Test
+    public void getType() {
+        final PluginInstanceData data = PluginInstanceDataFixture.newDefaultPluginInstanceData();
 
-    @NonNull
-    private static final String DEFAULT_REGISTRY_NAME = Plugin.generateRegistryName("foo", "bar");
-    //$NON-NLS-1$ //$NON-NLS-2$
-
-    @NonNull
-    private static final byte[] DEFAULT_BUNDLE = getDefaultBundle();
-
-    @NonNull
-    private static final String DEFAULT_BLURB = "Thanks Obama"; //$NON-NLS-1$
-
-
-    private static byte[] getDefaultBundle() {
-        try {
-            return BundleSerializer.serializeToByteArray(new Bundle());
-        } catch (Exception e) {
-            // Should never occur
-            return new byte[0];
-        }
+        assertThat(data.getType(), is(PluginInstanceDataFixture.DEFAULT_TYPE));
     }
 
     @SmallTest
-    public static void testGetType() {
-        final PluginInstanceData data = newDefaultPluginInstanceData();
+    @Test
+    public void getRegistryName() {
+        final PluginInstanceData data = PluginInstanceDataFixture.newDefaultPluginInstanceData();
 
-        assertEquals(PluginType.SETTING, data.getType());
+        assertThat(data.getRegistryName(), is(PluginInstanceDataFixture.DEFAULT_REGISTRY_NAME));
     }
 
     @SmallTest
-    public static void testGetRegistryName() {
-        final PluginInstanceData data = newDefaultPluginInstanceData();
+    @Test
+    public void testGetBlurb() {
+        final PluginInstanceData data = PluginInstanceDataFixture.newDefaultPluginInstanceData();
 
-        assertEquals(DEFAULT_REGISTRY_NAME, data.getRegistryName());
+        assertThat(data.getBlurb(), is(PluginInstanceDataFixture.DEFAULT_BLURB));
     }
 
     @SmallTest
-    public static void testGetBlurb() {
-        final PluginInstanceData data = newDefaultPluginInstanceData();
+    @Test
+    public void getSerializedBundle() {
+        final PluginInstanceData data = PluginInstanceDataFixture.newDefaultPluginInstanceData();
 
-        assertEquals(DEFAULT_BLURB, data.getBlurb());
+        assertArrayEquals(PluginInstanceDataFixture.getDefaultBundle(),
+                data.getSerializedBundle());
     }
 
     @SmallTest
-    public static void testGetSerializedBundle() {
-        final PluginInstanceData data = newDefaultPluginInstanceData();
+    @Test
+    public void getSerializedBundle_copy() {
+        final PluginInstanceData data = PluginInstanceDataFixture.newDefaultPluginInstanceData();
 
-        assertTrue(Arrays.equals(DEFAULT_BUNDLE, data.getSerializedBundle()));
+        assertThat(data.getSerializedBundle(), not(sameInstance(data.getSerializedBundle())));
     }
 
     @SmallTest
-    public static void testGetSerializedBundle_copy() {
-        final PluginInstanceData data = newDefaultPluginInstanceData();
+    @Test
+    public void equalsContract() {
+        PluginInstanceData defaultData = PluginInstanceDataFixture.newDefaultPluginInstanceData();
 
-        assertNotSame(data.getSerializedBundle(), data.getSerializedBundle());
-    }
+        assertEquals(defaultData, defaultData);
+        assertEquals(defaultData, PluginInstanceDataFixture
+                .newDefaultPluginInstanceData());
 
-    @SmallTest
-    public static void testEqualsAndHashcode() {
-        PluginInstanceData defaultData = newDefaultPluginInstanceData();
-
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultData, defaultData, true);
-        MoreAsserts
-                .checkEqualsAndHashCodeMethods(defaultData, newDefaultPluginInstanceData(), true);
-
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultData,
-                new PluginInstanceData(PluginType.CONDITION, DEFAULT_REGISTRY_NAME, DEFAULT_BUNDLE,
-                        DEFAULT_BLURB), false
+        assertNotEquals(defaultData,
+                new PluginInstanceData(PluginType.CONDITION,
+                        PluginInstanceDataFixture.DEFAULT_REGISTRY_NAME,
+                        PluginInstanceDataFixture.getDefaultBundle(),
+                        PluginInstanceDataFixture.DEFAULT_BLURB)
         );
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultData,
-                new PluginInstanceData(DEFAULT_TYPE, Plugin.generateRegistryName("bar", "foo"),
-                        DEFAULT_BUNDLE,
-                        DEFAULT_BLURB), false
+        assertNotEquals(defaultData,
+                new PluginInstanceData(PluginInstanceDataFixture.DEFAULT_TYPE,
+                        Plugin.generateRegistryName("bar", "foo"),
+                        PluginInstanceDataFixture.getDefaultBundle(),
+                        PluginInstanceDataFixture.DEFAULT_BLURB)
         );
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultData,
-                new PluginInstanceData(DEFAULT_TYPE, DEFAULT_REGISTRY_NAME, "bar".getBytes(),
-                        DEFAULT_BLURB), false
+        assertNotEquals(defaultData,
+                new PluginInstanceData(PluginInstanceDataFixture.DEFAULT_TYPE,
+                        PluginInstanceDataFixture.DEFAULT_REGISTRY_NAME, "bar".getBytes(),
+                        PluginInstanceDataFixture.DEFAULT_BLURB)
         );
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultData,
-                new PluginInstanceData(DEFAULT_TYPE, DEFAULT_REGISTRY_NAME, DEFAULT_BUNDLE,
-                        "bork"), false
+        assertNotEquals(defaultData,
+                new PluginInstanceData(PluginInstanceDataFixture.DEFAULT_TYPE,
+                        PluginInstanceDataFixture.DEFAULT_REGISTRY_NAME,
+                        PluginInstanceDataFixture.getDefaultBundle(),
+                        "bork")
         );
     }
 
     @SmallTest
-    public static void testToString() {
-        final PluginInstanceData defaultData = newDefaultPluginInstanceData();
+    @Test
+    public void toString_not_null() {
+        final PluginInstanceData defaultData = PluginInstanceDataFixture
+                .newDefaultPluginInstanceData();
         final String stringified = defaultData.toString();
 
-        assertNotNull(stringified);
-
-        assertTrue(stringified.contains(DEFAULT_TYPE.name()));
-        assertTrue(stringified.contains(DEFAULT_REGISTRY_NAME));
-        assertTrue(stringified.contains(DEFAULT_BLURB));
+        assertThat(stringified, notNullValue());
     }
 
     @SmallTest
-    public static void testParcelable() {
+    @Test
+    public void toString_contains_type() {
+        final PluginInstanceData defaultData = PluginInstanceDataFixture
+                .newDefaultPluginInstanceData();
+        final String stringified = defaultData.toString();
+        assertThat(stringified, containsString(PluginInstanceDataFixture.DEFAULT_TYPE.name()));
+    }
+
+    @SmallTest
+    @Test
+    public void toString_contains_registry_name() {
+        final PluginInstanceData defaultData = PluginInstanceDataFixture
+                .newDefaultPluginInstanceData();
+        final String stringified = defaultData.toString();
+        assertThat(stringified, containsString(PluginInstanceDataFixture.DEFAULT_REGISTRY_NAME));
+    }
+
+    @SmallTest
+    @Test
+    public void toString_contains_blurb() {
+        final PluginInstanceData defaultData = PluginInstanceDataFixture
+                .newDefaultPluginInstanceData();
+        final String stringified = defaultData.toString();
+        assertThat(stringified, containsString(PluginInstanceDataFixture.DEFAULT_BLURB));
+    }
+
+    @SmallTest
+    @Test
+    public void parcelable() {
         final Parcel parcel = Parcel.obtain();
         try {
-            final PluginInstanceData data = newDefaultPluginInstanceData();
+            final PluginInstanceData data = PluginInstanceDataFixture
+                    .newDefaultPluginInstanceData();
 
             data.writeToParcel(parcel, 0);
 
@@ -141,17 +166,9 @@ public final class PluginInstanceDataTest extends TestCase {
             final PluginInstanceData unparceled = PluginInstanceData.CREATOR
                     .createFromParcel(parcel);
 
-            assertEquals(data, unparceled);
+            assertThat(unparceled, is(data));
         } finally {
             parcel.recycle();
         }
     }
-
-    @NonNull
-    private static PluginInstanceData newDefaultPluginInstanceData() {
-        return new PluginInstanceData(DEFAULT_TYPE, DEFAULT_REGISTRY_NAME, DEFAULT_BUNDLE,
-                DEFAULT_BLURB);
-    }
-
-
 }

@@ -1,6 +1,6 @@
 /*
  * android-plugin-host-sdk-for-locale https://github.com/twofortyfouram/android-plugin-host-sdk-for-locale
- * Copyright 2015 two forty four a.m. LLC
+ * Copyright 2015-2016 two forty four a.m. LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -15,34 +15,45 @@
 
 package com.twofortyfouram.locale.sdk.host.model;
 
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.twofortyfouram.locale.api.Intent;
 
-public final class PluginTypeTest extends AndroidTestCase {
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+@RunWith(AndroidJUnit4.class)
+public final class PluginTypeTest {
+
+    @Test
     @SmallTest
-    public static void testGetActivityIntentAction_condition() {
-        assertEquals(Intent.ACTION_EDIT_CONDITION,
-                PluginType.CONDITION.getActivityIntentAction());
+    public void getActivityIntentAction_condition() {
+        assertThat(PluginType.CONDITION.getActivityIntentAction(),
+                is(Intent.ACTION_EDIT_CONDITION));
     }
 
+    @Test
     @SmallTest
-    public static void testGetActivityIntentAction_setting() {
-        assertEquals(Intent.ACTION_EDIT_SETTING,
-                PluginType.SETTING.getActivityIntentAction());
+    public void getActivityIntentAction_setting() {
+        assertThat(PluginType.SETTING.getActivityIntentAction(),
+                is(Intent.ACTION_EDIT_SETTING));
     }
 
+    @Test
     @SmallTest
-    public static void testGetReceiverIntentAction_condition() {
-        assertEquals(Intent.ACTION_QUERY_CONDITION,
-                PluginType.CONDITION.getReceiverIntentAction());
+    public void getReceiverIntentAction_condition() {
+        assertThat(PluginType.CONDITION.getReceiverIntentAction(),
+                is(Intent.ACTION_QUERY_CONDITION));
     }
 
+    @Test
     @SmallTest
-    public static void testGetReceiverIntentAction_setting() {
-        assertEquals(Intent.ACTION_FIRE_SETTING,
-                PluginType.SETTING.getReceiverIntentAction());
+    public void getReceiverIntentAction_setting() {
+        assertThat(PluginType.SETTING.getReceiverIntentAction(),
+                is(Intent.ACTION_FIRE_SETTING));
     }
 }

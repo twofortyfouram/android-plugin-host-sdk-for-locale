@@ -15,32 +15,40 @@
 
 package com.twofortyfouram.locale.sdk.host.internal;
 
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-/**
- * Tests {@link PackageResult}.
- */
-public final class PackageResultTest extends TestCase {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
+@RunWith(AndroidJUnit4.class)
+public final class PackageResultTest {
+
+    @Test
     @SmallTest
-    public static void testget_conditions() {
-        assertEquals(PackageResult.CONDITIONS_CHANGED, PackageResult.get(true, false));
+    public void get_conditions() {
+        assertThat(PackageResult.get(true, false), is(PackageResult.CONDITIONS_CHANGED));
     }
 
+    @Test
     @SmallTest
-    public static void testget_settings() {
-        assertEquals(PackageResult.SETTINGS_CHANGED, PackageResult.get(false, true));
+    public void get_settings() {
+        assertThat(PackageResult.get(false, true), is(PackageResult.SETTINGS_CHANGED));
     }
 
+    @Test
     @SmallTest
-    public static void testget_conditions_and_settings() {
-        assertEquals(PackageResult.CONDITIONS_AND_SETTINGS_CHANGED, PackageResult.get(true, true));
+    public void get_conditions_and_settings() {
+        assertThat(PackageResult.get(true, true),
+                is(PackageResult.CONDITIONS_AND_SETTINGS_CHANGED));
     }
 
+    @Test
     @SmallTest
-    public static void testget_nothing() {
-        assertEquals(PackageResult.NOTHING_CHANGED, PackageResult.get(false, false));
+    public void get_nothing() {
+        assertThat(PackageResult.get(false, false), is(PackageResult.NOTHING_CHANGED));
     }
 }

@@ -1,6 +1,6 @@
 /*
  * android-plugin-host-sdk-for-locale https://github.com/twofortyfouram/android-plugin-host-sdk-for-locale
- * Copyright 2015 two forty four a.m. LLC
+ * Copyright 2015-2016 two forty four a.m. LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -15,146 +15,190 @@
 
 package com.twofortyfouram.locale.sdk.host.model;
 
+import android.content.Context;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
-import android.test.MoreAsserts;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.twofortyfouram.locale.sdk.host.test.R;
 import com.twofortyfouram.locale.sdk.host.test.condition.receiver.PluginConditionReceiver;
 import com.twofortyfouram.locale.sdk.host.test.condition.ui.activity.PluginConditionActivity;
+import com.twofortyfouram.locale.sdk.host.test.fixture.PluginConfigurationFixture;
+import com.twofortyfouram.locale.sdk.host.test.fixture.PluginFixture;
 import com.twofortyfouram.locale.sdk.host.test.setting.receiver.PluginSettingReceiver;
 import com.twofortyfouram.locale.sdk.host.test.setting.ui.activity.PluginSettingActivity;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.util.LinkedList;
 
-/**
- * Tests Plugin.
- */
-public final class PluginTest extends AndroidTestCase {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
-    @NonNull
-    private static final String DEFAULT_PACKAGE = "com.twofortyfouram.locale"; //$NON-NLS-1$
+@RunWith(AndroidJUnit4.class)
+public final class PluginTest {
 
-    @NonNull
-    private static final String DEFAULT_ACTIVITY
-            = "com.twofortyfouram.locale.ui.activity.SomeActivity"; //$NON-NLS-1$
+    @SmallTest
+    @Test
+    public void getPackageName() {
+        final Plugin defaultPlugin = PluginFixture.newDefaultPlugin();
 
-    @NonNull
-    private static final String DEFAULT_RECEIVER
-            = "com.twofortyfouram.locale.receiver.SomeReceiver"; //$NON-NLS-1$
-
-    private static final int DEFAULT_VERSION_CODE = 1;
-
-    @NonNull
-    private static final PluginConfiguration DEFAULT_CONFIGURATION = PluginConfigurationTest
-            .newPluginConfiguration();
-
-    @NonNull
-    public static final Plugin newDefaultPlugin() {
-        return new Plugin(PluginType.CONDITION, DEFAULT_PACKAGE, DEFAULT_ACTIVITY,
-                DEFAULT_RECEIVER, DEFAULT_VERSION_CODE,
-                PluginConfigurationTest.newPluginConfiguration());
+        assertThat(defaultPlugin.getPackageName(), is(PluginFixture.DEFAULT_PACKAGE));
     }
 
     @SmallTest
-    public static void testGetPackageName() {
-        final Plugin defaultPlugin = newDefaultPlugin();
+    @Test
+    public void getActivityClassName() {
+        final Plugin defaultPlugin = PluginFixture.newDefaultPlugin();
 
-        assertEquals(DEFAULT_PACKAGE, defaultPlugin.getPackageName());
+        assertThat(defaultPlugin.getActivityClassName(), is(PluginFixture.DEFAULT_ACTIVITY));
     }
 
     @SmallTest
-    public static void testGetActivityClassName() {
-        final Plugin defaultPlugin = newDefaultPlugin();
+    @Test
+    public void getReceiverClassName() {
+        final Plugin defaultPlugin = PluginFixture.newDefaultPlugin();
 
-        assertEquals(DEFAULT_ACTIVITY, defaultPlugin.getActivityClassName());
+        assertThat(defaultPlugin.getReceiverClassName(), is(PluginFixture.DEFAULT_RECEIVER));
     }
 
     @SmallTest
-    public static void testGetReceiverClassName() {
-        final Plugin defaultPlugin = newDefaultPlugin();
+    @Test
+    public void getVersionCode() {
+        final Plugin defaultPlugin = PluginFixture.newDefaultPlugin();
 
-        assertEquals(DEFAULT_RECEIVER, defaultPlugin.getReceiverClassName());
+        assertThat(defaultPlugin.getVersionCode(), is(PluginFixture.DEFAULT_VERSION_CODE));
     }
 
     @SmallTest
-    public static void testGetVersionCode() {
-        final Plugin defaultPlugin = newDefaultPlugin();
+    @Test
+    public void getConfiguration() {
+        final Plugin defaultPlugin = PluginFixture.newDefaultPlugin();
 
-        assertEquals(DEFAULT_VERSION_CODE, defaultPlugin.getVersionCode());
+        assertThat(defaultPlugin.getConfiguration(), is(PluginFixture.DEFAULT_CONFIGURATION));
     }
 
     @SmallTest
-    public static void testGetConfiguration() {
-        final Plugin defaultPlugin = newDefaultPlugin();
+    @Test
+    public void testEquals() {
+        final Plugin defaultPlugin = PluginFixture.newDefaultPlugin();
+        final Plugin defaultPlugin2 = PluginFixture.newDefaultPlugin();
 
-        assertEquals(DEFAULT_CONFIGURATION, defaultPlugin.getConfiguration());
-    }
+        assertEquals(defaultPlugin, defaultPlugin);
+        assertEquals(defaultPlugin, defaultPlugin2);
 
-    @SmallTest
-    public static void testEqualsAndHashCode() {
-        Plugin defaultPlugin = newDefaultPlugin();
-        Plugin defaultPlugin2 = newDefaultPlugin();
+        assertEquals(defaultPlugin, new Plugin(PluginType.CONDITION,
+                PluginFixture.DEFAULT_PACKAGE, PluginFixture.DEFAULT_ACTIVITY,
+                PluginFixture.DEFAULT_RECEIVER, PluginFixture.DEFAULT_VERSION_CODE,
+                PluginFixture.DEFAULT_CONFIGURATION));
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultPlugin, defaultPlugin, true);
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultPlugin, defaultPlugin2, true);
-
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultPlugin, new Plugin(PluginType.CONDITION,
-                DEFAULT_PACKAGE, DEFAULT_ACTIVITY, DEFAULT_RECEIVER, DEFAULT_VERSION_CODE,
-                DEFAULT_CONFIGURATION), true);
-
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultPlugin, new Plugin(PluginType.SETTING,
-                DEFAULT_PACKAGE, DEFAULT_ACTIVITY, DEFAULT_RECEIVER, DEFAULT_VERSION_CODE,
-                DEFAULT_CONFIGURATION), false);
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultPlugin, new Plugin(PluginType.CONDITION,
-                        "foo", //$NON-NLS-1$
-                        DEFAULT_ACTIVITY, DEFAULT_RECEIVER, DEFAULT_VERSION_CODE,
-                        DEFAULT_CONFIGURATION),
-                false
+        assertNotEquals(defaultPlugin, new Plugin(PluginType.SETTING,
+                PluginFixture.DEFAULT_PACKAGE, PluginFixture.DEFAULT_ACTIVITY,
+                PluginFixture.DEFAULT_RECEIVER, PluginFixture.DEFAULT_VERSION_CODE,
+                PluginFixture.DEFAULT_CONFIGURATION));
+        assertNotEquals(defaultPlugin, new Plugin(PluginType.CONDITION,
+                "foo", //$NON-NLS-1$
+                PluginFixture.DEFAULT_ACTIVITY, PluginFixture.DEFAULT_RECEIVER,
+                PluginFixture.DEFAULT_VERSION_CODE,
+                PluginFixture.DEFAULT_CONFIGURATION)
         );
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultPlugin, new Plugin(PluginType.CONDITION,
-                DEFAULT_PACKAGE, "foo", //$NON-NLS-1$
-                DEFAULT_RECEIVER, DEFAULT_VERSION_CODE, DEFAULT_CONFIGURATION), false);
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultPlugin, new Plugin(PluginType.CONDITION,
-                        DEFAULT_PACKAGE, DEFAULT_ACTIVITY, "foo", DEFAULT_VERSION_CODE,
-                        DEFAULT_CONFIGURATION),
-                false
+        assertNotEquals(defaultPlugin, new Plugin(PluginType.CONDITION,
+                PluginFixture.DEFAULT_PACKAGE, "foo", //$NON-NLS-1$
+                PluginFixture.DEFAULT_RECEIVER, PluginFixture.DEFAULT_VERSION_CODE,
+                PluginFixture.DEFAULT_CONFIGURATION));
+        assertNotEquals(defaultPlugin, new Plugin(PluginType.CONDITION,
+                PluginFixture.DEFAULT_PACKAGE, PluginFixture.DEFAULT_ACTIVITY, "foo",
+                PluginFixture.DEFAULT_VERSION_CODE,
+                PluginFixture.DEFAULT_CONFIGURATION)
         ); //$NON-NLS-1$
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultPlugin, new Plugin(PluginType.CONDITION,
-                        DEFAULT_PACKAGE, DEFAULT_ACTIVITY, DEFAULT_RECEIVER,
-                        DEFAULT_VERSION_CODE + 1,
-                        DEFAULT_CONFIGURATION),
-                false
+        assertNotEquals(defaultPlugin, new Plugin(PluginType.CONDITION,
+                PluginFixture.DEFAULT_PACKAGE, PluginFixture.DEFAULT_ACTIVITY,
+                PluginFixture.DEFAULT_RECEIVER,
+                PluginFixture.DEFAULT_VERSION_CODE + 1,
+                PluginFixture.DEFAULT_CONFIGURATION)
         );
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultPlugin, new Plugin(PluginType.CONDITION,
-                        DEFAULT_PACKAGE, DEFAULT_ACTIVITY, DEFAULT_RECEIVER, DEFAULT_VERSION_CODE,
+        assertNotEquals(defaultPlugin, new Plugin(PluginType.CONDITION,
+                        PluginFixture.DEFAULT_PACKAGE, PluginFixture.DEFAULT_ACTIVITY,
+                        PluginFixture.DEFAULT_RECEIVER, PluginFixture.DEFAULT_VERSION_CODE,
                         new PluginConfiguration(true, false, false, false, false, false,
                                 new LinkedList<String>())
-                ),
-                false
+                )
         );
     }
 
     @SmallTest
-    public static void testToString() {
-        final Plugin plugin = newDefaultPlugin();
+    @Test
+    public void toString_not_null() {
+        final Plugin plugin = PluginFixture.newDefaultPlugin();
         final String pluginString = plugin.toString();
 
-        assertNotNull(pluginString);
-
-        assertTrue(pluginString.contains(plugin.getType().toString()));
-        assertTrue(pluginString.contains(plugin.getPackageName()));
-        assertTrue(pluginString.contains(plugin.getActivityClassName()));
-        assertTrue(pluginString.contains(plugin.getReceiverClassName()));
-        assertTrue(pluginString.contains(Integer.toString(plugin.getVersionCode())));
-        assertTrue(pluginString.contains(plugin.getConfiguration().toString()));
+        assertThat(pluginString, notNullValue());
     }
 
     @SmallTest
-    public static void testParcelable() {
-        final Plugin plugin = newDefaultPlugin();
+    @Test
+    public void toString_type() {
+        final Plugin plugin = PluginFixture.newDefaultPlugin();
+        final String pluginString = plugin.toString();
+
+        assertThat(pluginString, containsString(plugin.getType().toString()));
+    }
+
+    @SmallTest
+    @Test
+    public void toString_package() {
+        final Plugin plugin = PluginFixture.newDefaultPlugin();
+        final String pluginString = plugin.toString();
+
+        assertThat(pluginString, containsString(plugin.getPackageName()));
+    }
+
+    @SmallTest
+    @Test
+    public void toString_activity() {
+        final Plugin plugin = PluginFixture.newDefaultPlugin();
+        final String pluginString = plugin.toString();
+
+        assertThat(pluginString, containsString(plugin.getActivityClassName()));
+    }
+
+    @SmallTest
+    @Test
+    public void toString_receiver() {
+        final Plugin plugin = PluginFixture.newDefaultPlugin();
+        final String pluginString = plugin.toString();
+
+        assertThat(pluginString, containsString(plugin.getReceiverClassName()));
+    }
+
+    @SmallTest
+    @Test
+    public void toString_version() {
+        final Plugin plugin = PluginFixture.newDefaultPlugin();
+        final String pluginString = plugin.toString();
+
+        assertThat(pluginString, containsString(Integer.toString(plugin.getVersionCode())));
+    }
+
+    @SmallTest
+    @Test
+    public void toString_configuration() {
+        final Plugin plugin = PluginFixture.newDefaultPlugin();
+        final String pluginString = plugin.toString();
+
+        assertThat(pluginString, containsString(plugin.getConfiguration().toString()));
+    }
+
+    @SmallTest
+    @Test
+    public void parcelable() {
+        final Plugin plugin = PluginFixture.newDefaultPlugin();
 
         final Parcel parcel = Parcel.obtain();
         try {
@@ -166,86 +210,99 @@ public final class PluginTest extends AndroidTestCase {
             parcel.setDataPosition(0);
 
             final Plugin pluginUnparceled = Plugin.CREATOR.createFromParcel(parcel);
-            assertEquals(plugin, pluginUnparceled);
+            assertThat(pluginUnparceled, is(plugin));
         } finally {
             parcel.recycle();
         }
     }
 
     @SmallTest
-    public void testGetLabel_none() {
-        Plugin plugin = newDefaultPlugin();
-        assertEquals(plugin.getActivityClassName(), plugin.getActivityLabel(getContext()));
+    @Test
+    public void getLabel_none() {
+        final Plugin plugin = PluginFixture.newDefaultPlugin();
+
+        final String actual = plugin.getActivityLabel(InstrumentationRegistry.getContext());
+
+        assertThat(actual, is(PluginFixture.DEFAULT_ACTIVITY));
     }
 
     @SmallTest
-    public void testGetLabel_debug_condition() {
-        final Plugin plugin = new Plugin(PluginType.SETTING, getContext().getPackageName(),
+    @Test
+    public void getLabel_debug_condition() {
+        final Context context = InstrumentationRegistry.getContext();
+
+        final Plugin plugin = new Plugin(PluginType.SETTING, context.getPackageName(),
                 PluginConditionActivity.class.getName(), PluginConditionReceiver.class.getName(),
-                1, PluginConfigurationTest.newPluginConfiguration());
-        assertEquals(
-                getContext().getString(R.string.com_twofortyfouram_locale_sdk_host_condition_name),
-                plugin.getActivityLabel(getContext())); //$NON-NLS-1$
+                1, PluginConfigurationFixture.newPluginConfiguration());
+
+        final String expected = context
+                .getString(R.string.com_twofortyfouram_locale_sdk_host_condition_name);
+
+        assertThat(plugin.getActivityLabel(context), is(expected));
     }
 
     @SmallTest
-    public void testGetLabel_debug_setting() {
-        final Plugin plugin = new Plugin(PluginType.SETTING, getContext().getPackageName(),
+    @Test
+    public void getLabel_debug_setting() {
+        final Context context = InstrumentationRegistry.getContext();
+
+        final Plugin plugin = new Plugin(PluginType.SETTING, context.getPackageName(),
                 PluginSettingActivity.class.getName(), PluginSettingReceiver.class.getName(), 1,
-                PluginConfigurationTest.newPluginConfiguration());
-        assertEquals(
-                getContext().getString(R.string.com_twofortyfouram_locale_sdk_host_setting_name),
-                plugin.getActivityLabel(getContext())); //$NON-NLS-1$
+                PluginConfigurationFixture.newPluginConfiguration());
+
+        final String expected = context
+                .getString(R.string.com_twofortyfouram_locale_sdk_host_setting_name);
+
+        assertThat(plugin.getActivityLabel(context), is(expected));
     }
 
     @SmallTest
-    public void testGetIcon_none() {
-        Plugin plugin = newDefaultPlugin();
-        assertNotNull(plugin.getActivityIcon(getContext()));
+    @Test
+    public void getIcon_none() {
+        final Plugin plugin = PluginFixture.newDefaultPlugin();
+        final Context context = InstrumentationRegistry.getContext();
+
+        assertThat(plugin.getActivityIcon(context), is(notNullValue()));
     }
 
     @SmallTest
-    public static void testGetRegistryName() {
-        final Plugin defaultPlugin = newDefaultPlugin();
+    @Test
+    public void getRegistryName() {
+        final Plugin defaultPlugin = PluginFixture.newDefaultPlugin();
 
-        assertEquals(Plugin.generateRegistryName(DEFAULT_PACKAGE, DEFAULT_ACTIVITY),
-                defaultPlugin.getRegistryName());
+        final String expected = Plugin.generateRegistryName(PluginFixture.DEFAULT_PACKAGE,
+                PluginFixture.DEFAULT_ACTIVITY);
+
+        assertThat(defaultPlugin.getRegistryName(), is(expected));
     }
 
     @SmallTest
-    public static void testGenerateRegistryName() {
-        assertEquals("foo:bar", Plugin.generateRegistryName("foo",
-                "bar")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    @Test
+    public void generateRegistryName() {
+        assertThat(Plugin.generateRegistryName("foo", "bar"), is("foo:bar")); //$NON-NLS
     }
 
     @SmallTest
-    public static void testGenerateRegistryName_badParameters() {
-        try {
-            Plugin.generateRegistryName(null, "foo"); //$NON-NLS-1$
-            fail();
-        } catch (final AssertionError e) {
-            // expected exception
-        }
+    @Test(expected = AssertionError.class)
+    public void testGenerateRegistryName_null_package() {
+        Plugin.generateRegistryName(null, "foo"); //$NON-NLS-1$
+    }
 
-        try {
-            Plugin.generateRegistryName("foo", null); //$NON-NLS-1$
-            fail();
-        } catch (final AssertionError e) {
-            // expected exception
-        }
+    @SmallTest
+    @Test(expected = AssertionError.class)
+    public void testGenerateRegistryName_null_class() {
+        Plugin.generateRegistryName("foo", null); //$NON-NLS-1$
+    }
 
-        try {
-            Plugin.generateRegistryName("", "foo"); //$NON-NLS-1$ //$NON-NLS-2$
-            fail();
-        } catch (final AssertionError e) {
-            // expected exception
-        }
+    @SmallTest
+    @Test(expected = AssertionError.class)
+    public void testGenerateRegistryName_empty_package() {
+        Plugin.generateRegistryName("", "foo"); //$NON-NLS
+    }
 
-        try {
-            Plugin.generateRegistryName("foo", ""); //$NON-NLS-1$ //$NON-NLS-2$
-            fail();
-        } catch (final AssertionError e) {
-            // expected exception
-        }
+    @SmallTest
+    @Test(expected = AssertionError.class)
+    public void testGenerateRegistryName_empty_class() {
+        Plugin.generateRegistryName("foo", ""); //$NON-NLS
     }
 }

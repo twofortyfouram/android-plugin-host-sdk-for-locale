@@ -24,7 +24,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.twofortyfouram.locale.sdk.host.model.Plugin;
 import com.twofortyfouram.locale.sdk.host.model.PluginType;
-import com.twofortyfouram.locale.sdk.host.test.Junit4LoaderTestCase;
+import com.twofortyfouram.locale.sdk.host.test.Junit4SupportLoaderTestCase;
 import com.twofortyfouram.locale.sdk.host.test.fixture.DebugPluginFixture;
 
 import org.junit.Test;
@@ -39,12 +39,13 @@ import static org.hamcrest.Matchers.notNullValue;
 @RunWith(AndroidJUnit4.class)
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.HONEYCOMB)
-public final class PluginRegistryLoaderTest extends Junit4LoaderTestCase {
+public final class SupportPluginRegistryLoaderTest extends
+        Junit4SupportLoaderTestCase {
 
     @MediumTest
     @Test
     public void testLoad_conditions() {
-        final PluginRegistryLoader loader = new PluginRegistryLoader(
+        final SupportPluginRegistryLoader loader = new SupportPluginRegistryLoader(
                 InstrumentationRegistry.getContext(),
                 PluginType.CONDITION);
 
@@ -58,7 +59,7 @@ public final class PluginRegistryLoaderTest extends Junit4LoaderTestCase {
     @MediumTest
     @Test
     public void testLoad_settings() {
-        final PluginRegistryLoader loader = new PluginRegistryLoader(
+        final SupportPluginRegistryLoader loader = new SupportPluginRegistryLoader(
                 InstrumentationRegistry.getContext(),
                 PluginType.SETTING);
 

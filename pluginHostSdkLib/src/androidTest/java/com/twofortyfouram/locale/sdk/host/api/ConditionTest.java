@@ -16,42 +16,51 @@
 package com.twofortyfouram.locale.sdk.host.api;
 
 import android.annotation.SuppressLint;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.MediumTest;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.twofortyfouram.locale.sdk.host.internal.BundleSerializer;
 import com.twofortyfouram.locale.sdk.host.model.Plugin;
-import com.twofortyfouram.locale.sdk.host.model.PluginConfigurationTest;
 import com.twofortyfouram.locale.sdk.host.model.PluginInstanceData;
 import com.twofortyfouram.locale.sdk.host.model.PluginType;
 import com.twofortyfouram.locale.sdk.host.test.condition.bundle.PluginBundleManager;
-import com.twofortyfouram.locale.sdk.host.test.condition.receiver.PluginConditionReceiver;
-import com.twofortyfouram.locale.sdk.host.test.condition.ui.activity.PluginConditionActivity;
+import com.twofortyfouram.locale.sdk.host.test.fixture.PluginConfigurationFixture;
+import com.twofortyfouram.locale.sdk.host.test.fixture.DebugPluginFixture;
 import com.twofortyfouram.spackle.AndroidSdkVersion;
 import com.twofortyfouram.test.context.ReceiverContextWrapper;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.util.Collection;
 
-/**
- * Tests {@link Condition} via the debug plug-in.
- */
-public final class ConditionTest extends AndroidTestCase {
+import static android.support.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName;
+import static android.support.test.espresso.intent.matcher.ComponentNameMatchers.hasMyPackageName;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+
+@RunWith(AndroidJUnit4.class)
+public final class ConditionTest {
 
     @SuppressLint("NewApi")
     @SmallTest
-    public void testGetQueryIntent() {
-        final Plugin plugin = getDebugPlugin();
-        final Bundle bundle = PluginBundleManager.generateBundle(getContext(),
-                com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_SATISFIED);
+    @Test
+    public void getQueryIntent() {
+        final Plugin plugin = DebugPluginFixture.getDebugPluginCondition();
+        final Bundle bundle = PluginBundleManager
+                .generateBundle(InstrumentationRegistry.getContext(),
+                        com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_SATISFIED);
 
-        final Intent intent = Condition.newQueryIntent(getDebugPlugin(), bundle);
-        assertNotNull(intent);
+        final Intent intent = Condition.newQueryIntent(plugin, bundle);
+        assertThat(intent, notNullValue());
 
         final int expectedFlags;
         if (AndroidSdkVersion.isAtLeastSdk(Build.VERSION_CODES.HONEYCOMB_MR1)) {
@@ -59,41 +68,45 @@ public final class ConditionTest extends AndroidTestCase {
         } else {
             expectedFlags = Intent.FLAG_FROM_BACKGROUND;
         }
-        assertEquals(expectedFlags, intent.getFlags());
+        assertThat(intent.getFlags(), is(expectedFlags));
 
-        assertEquals(com.twofortyfouram.locale.api.Intent.ACTION_QUERY_CONDITION,
-                intent.getAction());
-        assertEquals(new ComponentName(plugin.getPackageName(), plugin.getReceiverClassName()),
-                intent.getComponent());
+        assertThat(intent.getAction(),
+                is(com.twofortyfouram.locale.api.Intent.ACTION_QUERY_CONDITION));
+        assertThat(intent.getComponent(), hasMyPackageName());
+        assertThat(intent.getComponent(),
+                hasClassName(plugin.getReceiverClassName()));
 
-        assertNull(intent.getData());
+        assertThat(intent.getData(), nullValue());
         if (AndroidSdkVersion.isAtLeastSdk(Build.VERSION_CODES.JELLY_BEAN)) {
-            assertNull(intent.getClipData());
+            assertThat(intent.getClipData(), nullValue());
         }
-        assertEquals(1, intent.getExtras().size());
+        assertThat(intent.getExtras().size(), is(1));
 
         final Bundle extraBundle = intent
                 .getBundleExtra(com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE);
-        assertNotNull(extraBundle);
+        assertThat(extraBundle, notNullValue());
         PluginBundleManager.isBundleValid(extraBundle);
     }
 
     @SmallTest
-    public void testQuery_intent() {
-        final ReceiverContextWrapper context = new ReceiverContextWrapper(getContext());
+    @Test
+    public void query_intent() {
+        final ReceiverContextWrapper context = new ReceiverContextWrapper(
+                InstrumentationRegistry.getContext());
 
         final Condition condition = new Condition(context, new Plugin(
                 PluginType.CONDITION, "foo", "bar", "baz",
-                1, PluginConfigurationTest
+                1, PluginConfigurationFixture
                 .newPluginConfiguration()
         )); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
         try {
             final Bundle bundle = new Bundle();
             bundle.putString("test_key", "test_value"); //$NON-NLS-1$//$NON-NLS-2$
 
-            assertEquals(com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN,
-                    condition.query(getPluginInstanceData(bundle),
-                            com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN)
+            assertThat(condition.query(getPluginInstanceData(bundle),
+                    com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN),
+                    is(com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN)
+
             );
         } finally {
             condition.destroy();
@@ -101,37 +114,41 @@ public final class ConditionTest extends AndroidTestCase {
 
         final Collection<ReceiverContextWrapper.SentIntent> intents = context
                 .getAndClearSentIntents();
-        assertEquals(1, intents.size());
+        assertThat(intents.size(), is(1));
 
         for (final ReceiverContextWrapper.SentIntent sentIntent : intents) {
-            assertFalse(sentIntent.getIsSticky());
-            assertNull(sentIntent.getPermission());
-            assertTrue(sentIntent.getIsOrdered());
+            assertThat(sentIntent.getIsSticky(), is(false));
+            assertThat(sentIntent.getPermission(), nullValue());
+            assertThat(sentIntent.getIsOrdered(), is(true));
 
             // Don't worry about the action, extras, etc.  Those are handled by testGetQueryIntent().
         }
     }
 
     @MediumTest
-    public void testQuery_satisfied() {
+    @Test
+    public void query_satisfied() {
         assertQuerySatisfiedWithState(
                 com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_SATISFIED);
     }
 
     @MediumTest
-    public void testQuery_unsatisfied() {
+    @Test
+    public void query_unsatisfied() {
         assertQuerySatisfiedWithState(
                 com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNSATISFIED);
     }
 
     @MediumTest
-    public void testQuery_unknown() {
+    @Test
+    public void query_unknown() {
         assertQuerySatisfiedWithState(
                 com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN);
     }
 
     @MediumTest
-    public void testQuery_bad_state() {
+    @Test
+    public void query_bad_state() {
         final Condition condition = getCondition();
 
         try {
@@ -140,10 +157,9 @@ public final class ConditionTest extends AndroidTestCase {
             bundle.putInt(PluginBundleManager.BUNDLE_EXTRA_INT_RESULT_CODE,
                     1); //$NON-NLS-1$
 
-            assertEquals(com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN,
-                    condition.query(getPluginInstanceData(bundle),
-                            com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN)
-            );
+            assertThat(condition.query(getPluginInstanceData(bundle),
+                    com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN),
+                    is(com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN));
         } finally {
             condition.destroy();
         }
@@ -153,10 +169,12 @@ public final class ConditionTest extends AndroidTestCase {
         final Condition condition = getCondition();
 
         try {
-            final Bundle bundle = PluginBundleManager.generateBundle(getContext(), state);
-            assertEquals(state, condition
-                    .query(getPluginInstanceData(bundle),
-                            com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN));
+            final Bundle bundle = PluginBundleManager
+                    .generateBundle(InstrumentationRegistry.getContext(), state);
+            assertThat(condition
+                            .query(getPluginInstanceData(bundle),
+                                    com.twofortyfouram.locale.api.Intent.RESULT_CONDITION_UNKNOWN),
+                    is(state));
         } finally {
             condition.destroy();
         }
@@ -164,17 +182,18 @@ public final class ConditionTest extends AndroidTestCase {
 
     @NonNull
     private Condition getCondition() {
-        return new Condition(getContext(), getDebugPlugin());
+        return new Condition(InstrumentationRegistry.getContext(),
+                DebugPluginFixture.getDebugPluginCondition());
     }
 
     @NonNull
     private PluginInstanceData getPluginInstanceData(@NonNull final Bundle bundle) {
-        final Plugin debugPlugin = getDebugPlugin();
+        final Plugin debugPlugin = DebugPluginFixture.getDebugPluginCondition();
 
         final byte[] bytes;
         try {
             bytes = BundleSerializer.serializeToByteArray(bundle);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -182,11 +201,4 @@ public final class ConditionTest extends AndroidTestCase {
                 bytes, "");
     }
 
-    @NonNull
-    private Plugin getDebugPlugin() {
-        return new Plugin(PluginType.CONDITION, getContext().getPackageName(),
-                PluginConditionActivity.class.getName(),
-                PluginConditionReceiver.class.getName(), 0,
-                PluginConfigurationTest.newPluginConfiguration());
-    }
 }

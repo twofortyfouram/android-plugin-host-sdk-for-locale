@@ -18,57 +18,41 @@ package com.twofortyfouram.locale.sdk.host.internal;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.twofortyfouram.spackle.bundle.BundleComparer;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.NotSerializableException;
 import java.util.ArrayList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 /**
  * Tests serialization and de-serialization of {@code Bundle} objects.
  */
-public class BundleSerializerTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public final class BundleSerializerTest {
 
-    /**
-     * Tests {@link BundleSerializer#serializeToByteArray(Bundle)} with a null
-     * bundle.
-     *
-     * @throws Exception if the test fails
-     */
-    public void testSerializeNull() throws Exception {
-        try {
-            BundleSerializer.serializeToByteArray(null);
-            fail();
-        } catch (final AssertionError e) {
-            // expected exception
-        }
-    }
-
-    /**
-     * Tests {@link BundleSerializer#deserializeFromByteArray(byte[])} with a
-     * null byte[].
-     *
-     * @throws Exception if the test fails
-     */
-    public void testDeserializeNull() throws Exception {
-        try {
-            BundleSerializer.deserializeFromByteArray(null);
-            fail();
-        } catch (final AssertionError e) {
-            // expected exception
-        }
-    }
-
-    /**
-     * Tests storing boolean types
-     * <p/>
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testBooleans() throws Exception {
+    @Test(expected = AssertionError.class)
+    public void serializeNull() throws Exception {
+        BundleSerializer.serializeToByteArray(null);
+    }
+
+    @SmallTest
+    @Test(expected = AssertionError.class)
+    public void deserializeNull() throws Exception {
+        BundleSerializer.deserializeFromByteArray(null);
+    }
+
+    @SmallTest
+    @Test
+    public void booleans() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putBoolean("com.test.extra_false", false); //$NON-NLS-1$
         inputBundle.putBoolean("com.test.extra_true", true); //$NON-NLS-1$
@@ -76,16 +60,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing boolean[] types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testBooleanArray() throws Exception {
+    @Test
+    public void booleanArray() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putBooleanArray("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putBooleanArray("com.test.extra_empty", new boolean[0]); //$NON-NLS-1$
@@ -94,16 +74,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing byte types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testByte() throws Exception {
+    @Test
+    public void bytes() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putByte("com.test.extra_min", Byte.MIN_VALUE); //$NON-NLS-1$
         inputBundle.putByte("com.test.extra_max", Byte.MAX_VALUE); //$NON-NLS-1$
@@ -111,16 +87,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing byte[] types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testByteArray() throws Exception {
+    @Test
+    public void byteArray() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putByteArray("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putByteArray("com.test.extra_empty", new byte[0]); //$NON-NLS-1$
@@ -129,16 +101,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing short types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testShort() throws Exception {
+    @Test
+    public void shorts() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putShort("com.test.extra_min", Short.MIN_VALUE); //$NON-NLS-1$
         inputBundle.putShort("com.test.extra_max", Short.MAX_VALUE); //$NON-NLS-1$
@@ -146,16 +114,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing short[] types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testShortArray() throws Exception {
+    @Test
+    public void shortArray() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putShortArray("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putShortArray("com.test.extra_empty", new short[0]); //$NON-NLS-1$
@@ -165,16 +129,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing int types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testInts() throws Exception {
+    @Test
+    public void ints() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putInt("com.test.extra_min", Integer.MIN_VALUE); //$NON-NLS-1$
         inputBundle.putInt("com.test.extra_one", 1); //$NON-NLS-1$
@@ -184,16 +144,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing int[] types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testIntArray() throws Exception {
+    @Test
+    public void intArray() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putIntArray("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putIntArray("com.test.extra_empty", new int[0]); //$NON-NLS-1$
@@ -204,16 +160,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing ArrayList<Integer> types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testIntegerArrayList() throws Exception {
+    @Test
+    public void integerArrayList() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putIntegerArrayList("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putIntegerArrayList("com.test.extra_empty",
@@ -227,16 +179,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing long types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testLongs() throws Exception {
+    @Test
+    public void longs() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putLong("com.test.extra_min", Long.MIN_VALUE); //$NON-NLS-1$
         inputBundle.putLong("com.test.extra_one", 1); //$NON-NLS-1$
@@ -246,16 +194,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing long[] types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testLongArray() throws Exception {
+    @Test
+    public void longArray() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putLongArray("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putLongArray("com.test.extra_empty", new long[0]); //$NON-NLS-1$
@@ -266,16 +210,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing double types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testDoubles() throws Exception {
+    @Test
+    public void doubles() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putDouble("com.test.extra_min", Double.MIN_VALUE); //$NON-NLS-1$
         inputBundle.putDouble("com.test.extra_one", 1); //$NON-NLS-1$
@@ -285,16 +225,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing double[] types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testDoubleArray() throws Exception {
+    @Test
+    public void doubleArray() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putDoubleArray("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putDoubleArray("com.test.extra_empty", new double[0]); //$NON-NLS-1$
@@ -305,7 +241,7 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
     /**
@@ -314,7 +250,7 @@ public class BundleSerializerTest extends AndroidTestCase {
      * @throws Exception if the test fails
      */
     @SmallTest
-    public void testFloats() throws Exception {
+    public void floats() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putFloat("com.test.extra_min", Float.MIN_VALUE); //$NON-NLS-1$
         inputBundle.putFloat("com.test.extra_one", 1); //$NON-NLS-1$
@@ -324,16 +260,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing float[] types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testFloatArray() throws Exception {
+    @Test
+    public void floatArray() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putFloatArray("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putFloatArray("com.test.extra_empty", new float[0]); //$NON-NLS-1$
@@ -344,16 +276,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing char types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testChar() throws Exception {
+    @Test
+    public void chars() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putChar("com.test.extra_min", Character.MIN_LOW_SURROGATE); //$NON-NLS-1$
         inputBundle.putChar("com.test.extra_max", Character.MAX_HIGH_SURROGATE); //$NON-NLS-1$
@@ -362,16 +290,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing char[] types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testCharArray() throws Exception {
+    @Test
+    public void charArray() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putCharArray("com.test.null", null); //$NON-NLS-1$
         inputBundle.putCharArray("com.test.extra_empty", new char[0]); //$NON-NLS-1$
@@ -380,16 +304,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing CharSequence types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testCharSequence() throws Exception {
+    @Test
+    public void charSequence() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putCharSequence("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putCharSequence("com.test.extra_empty", ""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -399,16 +319,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing CharSequence[] types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testCharSequenceArray() throws Exception {
+    @Test
+    public void charSequenceArray() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putCharSequenceArray("com.test.null", null); //$NON-NLS-1$
         inputBundle
@@ -416,21 +332,18 @@ public class BundleSerializerTest extends AndroidTestCase {
         inputBundle
                 .putCharSequenceArray(
                         "com.test.extra", new CharSequence[]{
-                                Resources.getSystem().getString(android.R.string.cancel)}); //$NON-NLS-1$
+                                Resources.getSystem().getString(
+                                        android.R.string.cancel)}); //$NON-NLS-1$
 
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing ArrayList<CharSequence> types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testCharSequenceArrayList() throws Exception {
+    @Test
+    public void charSequenceArrayList() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putCharSequenceArrayList("com.test.null", null); //$NON-NLS-1$
         inputBundle.putCharSequenceArrayList("com.test.extra_empty",
@@ -443,16 +356,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing string types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testString() throws Exception {
+    @Test
+    public void string() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putString("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putString("com.test.extra_empty", ""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -462,16 +371,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing string[] types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testStringArray() throws Exception {
+    @Test
+    public void stringArray() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putStringArray("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putStringArray("com.test.extra_empty", new String[0]); //$NON-NLS-1$
@@ -481,16 +386,12 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing ArrayList<String> types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testStringArrayList() throws Exception {
+    @Test
+    public void stringArrayList() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putStringArrayList("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle
@@ -504,36 +405,22 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests Parcelable
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
+    @Test(expected = NotSerializableException.class)
     public void testParcelable() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putParcelable("com.test.parcelable",
                 new Location("foo")); //$NON-NLS-1$ //$NON-NLS-2$
 
-        boolean threw = false;
-        try {
-            BundleSerializer.serializeToByteArray(inputBundle);
-        } catch (final NotSerializableException e) {
-            threw = true;
-        }
-        assertTrue(threw);
+        BundleSerializer.serializeToByteArray(inputBundle);
     }
 
-    /**
-     * Tests storing Bundle types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testBundles() throws Exception {
+    @Test
+    public void bundles() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putBundle("com.test.extra_null", null); //$NON-NLS-1$
         inputBundle.putBundle("com.test.extra_empty", new Bundle()); //$NON-NLS-1$
@@ -547,22 +434,18 @@ public class BundleSerializerTest extends AndroidTestCase {
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 
-    /**
-     * Tests storing string types
-     *
-     * @throws Exception if the test fails
-     */
     @SmallTest
-    public void testNullKey() throws Exception {
+    @Test
+    public void nullKey() throws Exception {
         final Bundle inputBundle = new Bundle();
         inputBundle.putString(null, "foo"); //$NON-NLS-1$
 
         final Bundle resultBundle = BundleSerializer.deserializeFromByteArray(BundleSerializer
                 .serializeToByteArray(inputBundle));
 
-        assertTrue(BundleComparer.areBundlesEqual(inputBundle, resultBundle));
+        assertThat(BundleComparer.areBundlesEqual(inputBundle, resultBundle), is(true));
     }
 }

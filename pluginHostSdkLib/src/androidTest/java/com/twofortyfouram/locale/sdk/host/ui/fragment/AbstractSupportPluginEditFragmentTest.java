@@ -35,19 +35,19 @@ import static org.junit.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.HONEYCOMB)
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public final class AbstractPluginEditFragmentTest {
+public final class AbstractSupportPluginEditFragmentTest {
 
     @SmallTest
     @Test
     public void newArgs_without_previous_values() {
-        final Bundle bundle = AbstractPluginEditFragment
+        final Bundle bundle = AbstractSupportPluginEditFragment
                 .newArgs(PluginFixture.newDefaultPlugin(), null);
 
         BundleAssertions.assertKeyCount(bundle, 1);
         assertEquals(
                 PluginFixture.newDefaultPlugin(),
                 bundle.getParcelable(
-                        AbstractPluginEditFragment.ARG_EXTRA_PARCELABLE_CURRENT_PLUGIN)
+                        AbstractSupportPluginEditFragment.ARG_EXTRA_PARCELABLE_CURRENT_PLUGIN)
         );
     }
 
@@ -59,7 +59,7 @@ public final class AbstractPluginEditFragmentTest {
                 plugin.getRegistryName(), new byte[]{},
                 "foo");  //$NON-NLS-1$
 
-        final Bundle bundle = AbstractPluginEditFragment
+        final Bundle bundle = AbstractSupportPluginEditFragment
                 .newArgs(PluginFixture.newDefaultPlugin(),
                         pluginInstanceData);
 
@@ -67,9 +67,9 @@ public final class AbstractPluginEditFragmentTest {
         assertEquals(
                 plugin,
                 bundle.getParcelable(
-                        AbstractPluginEditFragment.ARG_EXTRA_PARCELABLE_CURRENT_PLUGIN)
+                        AbstractSupportPluginEditFragment.ARG_EXTRA_PARCELABLE_CURRENT_PLUGIN)
         );
         assertEquals(pluginInstanceData, bundle.getParcelable(
-                AbstractPluginEditFragment.ARG_EXTRA_PARCELABLE_PREVIOUS_PLUGIN_INSTANCE_DATA));
+                AbstractSupportPluginEditFragment.ARG_EXTRA_PARCELABLE_PREVIOUS_PLUGIN_INSTANCE_DATA));
     }
 }

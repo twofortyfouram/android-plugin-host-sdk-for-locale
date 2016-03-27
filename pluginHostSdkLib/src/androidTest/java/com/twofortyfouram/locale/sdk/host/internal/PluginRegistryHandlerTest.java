@@ -16,52 +16,67 @@
 package com.twofortyfouram.locale.sdk.host.internal;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.HandlerThread;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.MediumTest;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.MediumTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.twofortyfouram.locale.sdk.host.model.Plugin;
-import com.twofortyfouram.locale.sdk.host.model.PluginConfigurationTest;
 import com.twofortyfouram.locale.sdk.host.model.PluginType;
 import com.twofortyfouram.locale.sdk.host.test.condition.ui.activity.PluginConditionActivity;
+import com.twofortyfouram.locale.sdk.host.test.fixture.PluginConfigurationFixture;
 import com.twofortyfouram.locale.sdk.host.test.setting.ui.activity.PluginSettingActivity;
 import com.twofortyfouram.spackle.ThreadUtil;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
-/**
- * Tests {@link PluginRegistryHandler}.
- */
-public final class PluginRegistryHandlerTest extends AndroidTestCase {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.collection.IsMapContaining.hasKey;
+
+@RunWith(AndroidJUnit4.class)
+public final class PluginRegistryHandlerTest {
 
     @MediumTest
-    public void testHandleInit() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @Test
+    public void handleInit() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
-            assertNull(registryHandler.mMutableConditionMap);
-            assertNull(registryHandler.mMutableSettingMap);
+            assertThat(registryHandler.mMutableConditionMap, nullValue());
+            assertThat(registryHandler.mMutableSettingMap, nullValue());
 
             registryHandler.handleInit();
 
-            assertNotNull(registryHandler.mMutableConditionMap);
-            assertNotNull(registryHandler.mMutableSettingMap);
+            assertThat(registryHandler.mMutableConditionMap, notNullValue());
+            assertThat(registryHandler.mMutableSettingMap, notNullValue());
 
-            assertFalse(registryHandler.mMutableConditionMap.isEmpty());
-            assertFalse(registryHandler.mMutableSettingMap.isEmpty());
+            assertThat(registryHandler.mMutableConditionMap.isEmpty(), is(false));
+            assertThat(registryHandler.mMutableSettingMap.isEmpty(), is(false));
 
             /*
              * Verify the debug plug-in condition and debug plug-in setting were
              * detected.
              */
-            assertTrue(registryHandler.mMutableConditionMap.containsKey(Plugin
-                    .generateRegistryName(getContext().getPackageName(),
+            assertThat(registryHandler.mMutableConditionMap, hasKey(Plugin
+                    .generateRegistryName(context.getPackageName(),
                             PluginConditionActivity.class.getName())));
-            assertTrue(registryHandler.mMutableSettingMap.containsKey(Plugin.generateRegistryName(
-                    getContext().getPackageName(), PluginSettingActivity.class.getName())));
+            assertThat(registryHandler.mMutableSettingMap, hasKey(Plugin.generateRegistryName(
+                    context.getPackageName(), PluginSettingActivity.class.getName())));
         } finally {
             registryHandler.handleDestroy();
             thread.quit();
@@ -69,10 +84,15 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
     }
 
     @MediumTest
-    public void testHandleRemovePackage_condition_and_setting() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @Test
+    public void handleRemovePackage_condition_and_setting() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
             registryHandler.handleInit();
 
@@ -86,11 +106,11 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
              */
             final Plugin testPluginCondition = new Plugin(
                     PluginType.CONDITION,
-                    "com.twofortyfouram.locale.condition.hack",
-                    "com.twofortyfouram.locale.condition.hack.EditActivity",
-                    "com.twofortyfouram.locale.condition.hack.QueryReceiver",
-                    1, PluginConfigurationTest
-                    .newPluginConfiguration()); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+                    "com.twofortyfouram.locale.condition.hack",//$NON-NLS
+                    "com.twofortyfouram.locale.condition.hack.EditActivity",//$NON-NLS
+                    "com.twofortyfouram.locale.condition.hack.QueryReceiver",//$NON-NLS
+                    1, PluginConfigurationFixture
+                    .newPluginConfiguration());
             registryHandler.mMutableConditionMap.put(testPluginCondition.getRegistryName(),
                     testPluginCondition);
 
@@ -99,24 +119,23 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
              */
             final Plugin testPluginSetting = new Plugin(
                     PluginType.CONDITION,
-                    "com.twofortyfouram.locale.condition.hack",
-                    "com.twofortyfouram.locale.condition.hack.EditActivity",
-                    "com.twofortyfouram.locale.condition.hack.FireReceiver",
-                    1, PluginConfigurationTest
-                    .newPluginConfiguration()); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+                    "com.twofortyfouram.locale.condition.hack",//$NON-NLS
+                    "com.twofortyfouram.locale.condition.hack.EditActivity",//$NON-NLS
+                    "com.twofortyfouram.locale.condition.hack.FireReceiver",//$NON-NLS
+                    1, PluginConfigurationFixture
+                    .newPluginConfiguration());
             registryHandler.mMutableSettingMap.put(testPluginSetting.getRegistryName(),
                     testPluginCondition);
 
-            assertEquals(PackageResult.CONDITIONS_AND_SETTINGS_CHANGED,
-                    registryHandler
-                            .handlePackageRemoved(
-                                    "com.twofortyfouram.locale.condition.hack")); //$NON-NLS-1$
+            assertThat(registryHandler.handlePackageRemoved(
+                    "com.twofortyfouram.locale.condition.hack"),
+                    is(PackageResult.CONDITIONS_AND_SETTINGS_CHANGED)); //$NON-NLS-1$
 
             /*
              * Verify the maps are back to their original states
              */
-            assertTrue(conditionsBefore.equals(registryHandler.mMutableConditionMap));
-            assertTrue(settingsBefore.equals(registryHandler.mMutableSettingMap));
+            assertThat(registryHandler.mMutableConditionMap, is(conditionsBefore));
+            assertThat(registryHandler.mMutableSettingMap, is(settingsBefore));
         } finally {
             registryHandler.handleDestroy();
             thread.quit();
@@ -124,10 +143,15 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
     }
 
     @MediumTest
-    public void testHandleRemovePackage_no_plugin() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @Test
+    public void handleRemovePackage_no_plugin() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
             registryHandler.handleInit();
 
@@ -136,15 +160,15 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
             final Map<String, Plugin> settingsBefore = new HashMap<String, Plugin>(
                     registryHandler.mMutableSettingMap);
 
-            assertEquals(PackageResult.NOTHING_CHANGED,
-                    registryHandler
-                            .handlePackageRemoved("com.twofortyfouram.locale.hack")); //$NON-NLS-1$
+            assertThat(registryHandler
+                            .handlePackageRemoved("com.twofortyfouram.locale.hack"), //$NON-NLS-1$
+                    is(PackageResult.NOTHING_CHANGED));
 
             /*
              * Verify the maps were unchanged
              */
-            assertTrue(conditionsBefore.equals(registryHandler.mMutableConditionMap));
-            assertTrue(settingsBefore.equals(registryHandler.mMutableSettingMap));
+            assertThat(registryHandler.mMutableConditionMap, is(conditionsBefore));
+            assertThat(registryHandler.mMutableSettingMap, is(settingsBefore));
         } finally {
             registryHandler.handleDestroy();
             thread.quit();
@@ -152,10 +176,15 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
     }
 
     @MediumTest
-    public void testHandleRemovePackage_condition() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @Test
+    public void handleRemovePackage_condition() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
             registryHandler.handleInit();
 
@@ -169,23 +198,23 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
              */
             final Plugin testPlugin = new Plugin(
                     PluginType.CONDITION,
-                    "com.twofortyfouram.locale.condition.hack",
-                    "com.twofortyfouram.locale.condition.hack.EditActivity",
-                    "com.twofortyfouram.locale.condition.hack.QueryReceiver",
-                    1, PluginConfigurationTest
-                    .newPluginConfiguration()); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+                    "com.twofortyfouram.locale.condition.hack",//$NON-NLS
+                    "com.twofortyfouram.locale.condition.hack.EditActivity",//$NON-NLS
+                    "com.twofortyfouram.locale.condition.hack.QueryReceiver",//$NON-NLS
+                    1, PluginConfigurationFixture
+                    .newPluginConfiguration());
             registryHandler.mMutableConditionMap.put(testPlugin.getRegistryName(), testPlugin);
 
-            assertEquals(PackageResult.CONDITIONS_CHANGED,
-                    registryHandler
+            assertThat(registryHandler
                             .handlePackageRemoved(
-                                    "com.twofortyfouram.locale.condition.hack")); //$NON-NLS-1$
+                                    "com.twofortyfouram.locale.condition.hack"), //$NON-NLS-1$
+                    is(PackageResult.CONDITIONS_CHANGED));
 
             /*
              * Verify the maps are back to their original states
              */
-            assertTrue(conditionsBefore.equals(registryHandler.mMutableConditionMap));
-            assertTrue(settingsBefore.equals(registryHandler.mMutableSettingMap));
+            assertThat(registryHandler.mMutableConditionMap, is(conditionsBefore));
+            assertThat(registryHandler.mMutableSettingMap, is(settingsBefore));
         } finally {
             registryHandler.handleDestroy();
             thread.quit();
@@ -193,10 +222,15 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
     }
 
     @MediumTest
-    public void testHandleRemovePackage_setting() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @Test
+    public void handleRemovePackage_setting() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
             registryHandler.handleInit();
 
@@ -210,22 +244,22 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
              */
             final Plugin testPlugin = new Plugin(
                     PluginType.SETTING,
-                    "com.twofortyfouram.locale.setting.hack",
-                    "com.twofortyfouram.locale.setting.hack.EditActivity",
-                    "com.twofortyfouram.locale.setting.hack.FireReceiver",
-                    1, PluginConfigurationTest
-                    .newPluginConfiguration()); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+                    "com.twofortyfouram.locale.setting.hack", //$NON-NLS
+                    "com.twofortyfouram.locale.setting.hack.EditActivity",//$NON-NLS
+                    "com.twofortyfouram.locale.setting.hack.FireReceiver",//$NON-NLS
+                    1, PluginConfigurationFixture
+                    .newPluginConfiguration());
             registryHandler.mMutableSettingMap.put(testPlugin.getRegistryName(), testPlugin);
 
-            assertEquals(PackageResult.SETTINGS_CHANGED,
-                    registryHandler.handlePackageRemoved(
-                            "com.twofortyfouram.locale.setting.hack")); //$NON-NLS-1$
+            assertThat(registryHandler.handlePackageRemoved(
+                    "com.twofortyfouram.locale.setting.hack"), //$NON-NLS-1$
+                    is(PackageResult.SETTINGS_CHANGED));
 
             /*
              * Verify the maps are back to their original states
              */
-            assertTrue(conditionsBefore.equals(registryHandler.mMutableConditionMap));
-            assertTrue(settingsBefore.equals(registryHandler.mMutableSettingMap));
+            assertThat(registryHandler.mMutableConditionMap, is(conditionsBefore));
+            assertThat(registryHandler.mMutableSettingMap, is(settingsBefore));
         } finally {
             registryHandler.handleDestroy();
             thread.quit();
@@ -234,10 +268,15 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
     }
 
     @MediumTest
-    public void testHandleAddPackage_no_package() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @Test
+    public void handleAddPackage_no_package() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
             registryHandler.handleInit();
 
@@ -246,15 +285,15 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
             final Map<String, Plugin> settingsBefore = new HashMap<String, Plugin>(
                     registryHandler.mMutableSettingMap);
 
-            assertEquals(PackageResult.NOTHING_CHANGED,
-                    registryHandler
-                            .handlePackageAdded("com.twofortyfouram.locale.hack")); //$NON-NLS-1$
+            assertThat(registryHandler
+                            .handlePackageAdded("com.twofortyfouram.locale.hack"), //$NON-NLS-1$
+                    is(PackageResult.NOTHING_CHANGED));
 
             /*
              * Verify the maps were unchanged
              */
-            assertTrue(conditionsBefore.equals(registryHandler.mMutableConditionMap));
-            assertTrue(settingsBefore.equals(registryHandler.mMutableSettingMap));
+            assertThat(registryHandler.mMutableConditionMap, is(conditionsBefore));
+            assertThat(registryHandler.mMutableSettingMap, is(settingsBefore));
         } finally {
             registryHandler.handleDestroy();
             thread.quit();
@@ -262,10 +301,15 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
     }
 
     @MediumTest
-    public void testHandleAddPackage_no_plugin() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @Test
+    public void handleAddPackage_no_plugin() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
             registryHandler.handleInit();
 
@@ -274,14 +318,14 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
             final Map<String, Plugin> settingsBefore = new HashMap<String, Plugin>(
                     registryHandler.mMutableSettingMap);
 
-            assertEquals(PackageResult.NOTHING_CHANGED,
-                    registryHandler.handlePackageAdded("com.google.maps")); //$NON-NLS-1$
+            assertThat(registryHandler.handlePackageAdded("com.google.maps"), //$NON-NLS-1$
+                    is(PackageResult.NOTHING_CHANGED));
 
             /*
              * Verify the maps were unchanged
              */
-            assertTrue(conditionsBefore.equals(registryHandler.mMutableConditionMap));
-            assertTrue(settingsBefore.equals(registryHandler.mMutableSettingMap));
+            assertThat(registryHandler.mMutableConditionMap, is(conditionsBefore));
+            assertThat(registryHandler.mMutableSettingMap, is(settingsBefore));
         } finally {
             registryHandler.handleDestroy();
             thread.quit();
@@ -289,31 +333,39 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
     }
 
     @MediumTest
-    public void testHandleAddPackage_condition() {
-        final ComponentName disabledComponent = new ComponentName(getContext(), PluginSettingActivity.class.getName());
+    @Test
+    public void handleAddPackage_condition() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
 
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+        final ComponentName disabledComponent = new ComponentName(context,
+                PluginSettingActivity.class.getName());
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
-            getContext().getPackageManager().setComponentEnabledSetting(disabledComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            context.getPackageManager().setComponentEnabledSetting(disabledComponent,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 
             registryHandler.handleInit();
 
             registryHandler.mMutableConditionMap.clear();
             registryHandler.mMutableSettingMap.clear();
 
-            assertEquals(PackageResult.CONDITIONS_CHANGED,
-                    registryHandler
-                            .handlePackageAdded(
-                                    getContext().getPackageName()));
+            assertThat(registryHandler
+                    .handlePackageAdded(
+                            context.getPackageName()), is(PackageResult.CONDITIONS_CHANGED));
 
-            final String conditionKey = Plugin.generateRegistryName(getContext().getPackageName(), PluginConditionActivity.class.getName());
+            final String conditionKey = Plugin.generateRegistryName(context.getPackageName(),
+                    PluginConditionActivity.class.getName());
 
-            assertTrue(registryHandler.mMutableConditionMap.containsKey(conditionKey));
-            assertTrue(registryHandler.mMutableSettingMap.isEmpty());
+            assertThat(registryHandler.mMutableConditionMap, hasKey(conditionKey));
+            assertThat(registryHandler.mMutableSettingMap.isEmpty(), is(true));
         } finally {
-            getContext().getPackageManager().setComponentEnabledSetting(disabledComponent, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
+            context.getPackageManager().setComponentEnabledSetting(disabledComponent,
+                    PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
 
             registryHandler.handleDestroy();
             thread.quit();
@@ -321,31 +373,39 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
     }
 
     @MediumTest
-    public void testHandleAddPackage_setting() {
-        final ComponentName disabledComponent = new ComponentName(getContext(), PluginConditionActivity.class.getName());
+    @Test
+    public void handleAddPackage_setting() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
 
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+        final ComponentName disabledComponent = new ComponentName(context,
+                PluginConditionActivity.class.getName());
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
-            getContext().getPackageManager().setComponentEnabledSetting(disabledComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            context.getPackageManager().setComponentEnabledSetting(disabledComponent,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 
             registryHandler.handleInit();
 
             registryHandler.mMutableConditionMap.clear();
             registryHandler.mMutableSettingMap.clear();
 
-            assertEquals(PackageResult.SETTINGS_CHANGED,
-                    registryHandler
-                            .handlePackageAdded(
-                                    getContext().getPackageName()));
+            assertThat(registryHandler
+                    .handlePackageAdded(
+                            context.getPackageName()), is(PackageResult.SETTINGS_CHANGED));
 
-            final String settingKey = Plugin.generateRegistryName(getContext().getPackageName(), PluginSettingActivity.class.getName());
+            final String settingKey = Plugin.generateRegistryName(context.getPackageName(),
+                    PluginSettingActivity.class.getName());
 
-            assertTrue(registryHandler.mMutableConditionMap.isEmpty());
-            assertTrue(registryHandler.mMutableSettingMap.containsKey(settingKey));
+            assertThat(registryHandler.mMutableConditionMap.isEmpty(), is(true));
+            assertThat(registryHandler.mMutableSettingMap, hasKey(settingKey));
         } finally {
-            getContext().getPackageManager().setComponentEnabledSetting(disabledComponent, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
+            context.getPackageManager().setComponentEnabledSetting(disabledComponent,
+                    PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
 
             registryHandler.handleDestroy();
             thread.quit();
@@ -353,36 +413,49 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
     }
 
     @MediumTest
-    public void testHandleAddPackage_condition_and_setting() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @Test
+    public void handleAddPackage_condition_and_setting() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
             registryHandler.handleInit();
 
             registryHandler.mMutableConditionMap.clear();
             registryHandler.mMutableSettingMap.clear();
 
-            assertEquals(PackageResult.CONDITIONS_AND_SETTINGS_CHANGED,
-                    registryHandler
+            assertThat(registryHandler
                             .handlePackageAdded(
-                                    getContext().getPackageName()));
+                                    context.getPackageName()),
+                    is(PackageResult.CONDITIONS_AND_SETTINGS_CHANGED));
 
-            final String conditionKey = Plugin.generateRegistryName(getContext().getPackageName(), PluginConditionActivity.class.getName());
-            final String settingKey = Plugin.generateRegistryName(getContext().getPackageName(), PluginSettingActivity.class.getName());
+            final String conditionKey = Plugin.generateRegistryName(context.getPackageName(),
+                    PluginConditionActivity.class.getName());
+            final String settingKey = Plugin.generateRegistryName(context.getPackageName(),
+                    PluginSettingActivity.class.getName());
 
-            assertTrue(registryHandler.mMutableConditionMap.containsKey(conditionKey));
-            assertTrue(registryHandler.mMutableSettingMap.containsKey(settingKey));
+            assertThat(registryHandler.mMutableConditionMap, hasKey(conditionKey));
+            assertThat(registryHandler.mMutableSettingMap, hasKey(settingKey));
         } finally {
             registryHandler.handleDestroy();
             thread.quit();
         }
     }
 
-    public void testHandleAddPackage_no_change() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @MediumTest
+    @Test
+    public void handleAddPackage_no_change() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
             registryHandler.handleInit();
 
@@ -391,24 +464,28 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
             final Map<String, Plugin> settingsBefore = new HashMap<String, Plugin>(
                     registryHandler.mMutableSettingMap);
 
-            assertEquals(
-                    PackageResult.NOTHING_CHANGED,
-                    registryHandler
-                            .handlePackageChanged(
-                                    getContext().getPackageName()));
+            assertThat(registryHandler
+                    .handlePackageChanged(
+                            context.getPackageName()), is(PackageResult.NOTHING_CHANGED));
 
-            assertTrue(conditionsBefore.equals(registryHandler.mMutableConditionMap));
-            assertTrue(settingsBefore.equals(registryHandler.mMutableSettingMap));
+            assertThat(registryHandler.mMutableConditionMap, is(conditionsBefore));
+            assertThat(registryHandler.mMutableSettingMap, is(settingsBefore));
         } finally {
             registryHandler.handleDestroy();
             thread.quit();
         }
     }
 
-    public void testHandleChangePackage_no_change() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @MediumTest
+    @Test
+    public void handleChangePackage_no_change() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
             registryHandler.handleInit();
 
@@ -417,21 +494,26 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
             final Map<String, Plugin> settingsBefore = new HashMap<String, Plugin>(
                     registryHandler.mMutableSettingMap);
 
-            assertEquals(PackageResult.NOTHING_CHANGED,
-                    registryHandler.handlePackageChanged("com.google.maps")); //$NON-NLS-1$
+            assertThat(registryHandler.handlePackageChanged("com.google.maps"), //$NON-NLS-1$
+                    is(PackageResult.NOTHING_CHANGED));
 
-            assertTrue(conditionsBefore.equals(registryHandler.mMutableConditionMap));
-            assertTrue(settingsBefore.equals(registryHandler.mMutableSettingMap));
+            assertThat(registryHandler.mMutableConditionMap, is(conditionsBefore));
+            assertThat(registryHandler.mMutableSettingMap, is(settingsBefore));
         } finally {
             registryHandler.handleDestroy();
         }
     }
 
     @MediumTest
-    public void testHandleChangePackage_no_package() {
-        final HandlerThread thread = ThreadUtil.newHandlerThread(getName(), ThreadUtil.ThreadPriority.DEFAULT);
+    @Test
+    public void handleChangePackage_no_package() {
+        final Context context = InstrumentationRegistry.getContext();
+        final String uuid = UUID.randomUUID().toString();
+
+        final HandlerThread thread = ThreadUtil
+                .newHandlerThread(uuid, ThreadUtil.ThreadPriority.DEFAULT);
         final PluginRegistryHandler registryHandler = new PluginRegistryHandler(thread.getLooper(),
-                getContext(), getName(), getName());
+                context, uuid, uuid);
         try {
             registryHandler.handleInit();
 
@@ -440,12 +522,12 @@ public final class PluginRegistryHandlerTest extends AndroidTestCase {
             final Map<String, Plugin> settingsBefore = new HashMap<String, Plugin>(
                     registryHandler.mMutableSettingMap);
 
-            assertEquals(PackageResult.NOTHING_CHANGED,
-                    registryHandler
-                            .handlePackageChanged("com.twofortyfouram.locale.hack")); //$NON-NLS-1$
+            assertThat(registryHandler
+                            .handlePackageChanged("com.twofortyfouram.locale.hack"), //$NON-NLS-1$
+                    is(PackageResult.NOTHING_CHANGED));
 
-            assertTrue(conditionsBefore.equals(registryHandler.mMutableConditionMap));
-            assertTrue(settingsBefore.equals(registryHandler.mMutableSettingMap));
+            assertThat(registryHandler.mMutableConditionMap, is(conditionsBefore));
+            assertThat(registryHandler.mMutableSettingMap, is(settingsBefore));
         } finally {
             registryHandler.handleDestroy();
             thread.quit();

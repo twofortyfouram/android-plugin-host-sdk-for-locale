@@ -18,18 +18,26 @@ package com.twofortyfouram.locale.sdk.host.internal;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class PackageNameComparatorTest extends AndroidTestCase {
+import static org.hamcrest.MatcherAssert.assertThat;
+
+@RunWith(AndroidJUnit4.class)
+public final class PackageNameComparatorTest {
 
     @SmallTest
-    public void testCompare() {
-        List<ResolveInfo> toSort = new LinkedList<ResolveInfo>();
+    @Test
+    public void compare() {
+        final List<ResolveInfo> toSort = new LinkedList<ResolveInfo>();
         final ResolveInfo org = getResolveInfoWithPackage("org.charitable.android"); //$NON-NLS-1$
         final ResolveInfo com = getResolveInfoWithPackage("com.megacorp.android"); //$NON-NLS-1$
         final ResolveInfo gov = getResolveInfoWithPackage("gov.thanksobama.android"); //$NON-NLS-1$
@@ -41,15 +49,12 @@ public final class PackageNameComparatorTest extends AndroidTestCase {
 
         Collections.sort(toSort, new PackageNameComparator());
 
-        assertEquals(com, toSort.get(0));
-        assertEquals(gov, toSort.get(1));
-        assertEquals(net, toSort.get(2));
-        assertEquals(org, toSort.get(3));
+        assertThat(toSort, Matchers.contains(com, gov, net, org));
     }
 
     @NonNull
     private static ResolveInfo getResolveInfoWithPackage(@NonNull final String packageName) {
-        ResolveInfo info = new ResolveInfo();
+        final ResolveInfo info = new ResolveInfo();
         info.activityInfo = new ActivityInfo();
         info.activityInfo.packageName = packageName;
 

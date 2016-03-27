@@ -22,108 +22,123 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.MediumTest;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import android.text.format.DateUtils;
 
 import com.twofortyfouram.locale.sdk.host.model.Plugin;
 import com.twofortyfouram.locale.sdk.host.model.PluginType;
 import com.twofortyfouram.log.Lumberjack;
 import com.twofortyfouram.spackle.ThreadUtil;
-import com.twofortyfouram.spackle.ThreadUtil.ThreadPriority;
+
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests the plug-in registry.
- */
-public final class PluginRegistryTest extends AndroidTestCase {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+
+@RunWith(AndroidJUnit4.class)
+public final class PluginRegistryTest {
 
     public static final long REGISTRY_LOAD_WAIT_MILLIS = 15 * DateUtils.SECOND_IN_MILLIS;
 
     @SmallTest
-    public void testGetInstance_non_null() {
+    @Test
+    public void getInstance_non_null() {
         final PluginRegistry registrySingleton = PluginRegistry
-                .getInstance(getContext());
+                .getInstance(InstrumentationRegistry.getContext());
 
-        assertNotNull(registrySingleton);
+        assertThat(registrySingleton, notNullValue());
     }
 
     @SmallTest
-    public void testGetInstance_cached() {
+    @Test
+    public void getInstance_cached() {
         final PluginRegistry registrySingleton = PluginRegistry
-                .getInstance(getContext());
+                .getInstance(InstrumentationRegistry.getContext());
 
-        assertSame(registrySingleton, PluginRegistry.getInstance(getContext()));
+        assertThat(PluginRegistry.getInstance(InstrumentationRegistry.getContext()),
+                sameInstance(registrySingleton));
     }
 
+    /*
+     * If this test hangs, then there is a bug with getInstance() initializing the registry.
+     */
     @MediumTest
-    public void testGetInstance_initialized() {
+    @Test(timeout = REGISTRY_LOAD_WAIT_MILLIS)
+    public void getInstance_initialized() {
         final PluginRegistry registrySingleton = PluginRegistry
-                .getInstance(getContext());
+                .getInstance(InstrumentationRegistry.getContext());
 
-        assertNotNull(registrySingleton);
-        assertSame(registrySingleton, PluginRegistry.getInstance(getContext()));
+        assertThat(registrySingleton, notNullValue());
+        assertThat(PluginRegistry.getInstance(InstrumentationRegistry.getContext()),
+                sameInstance(registrySingleton));
 
-        // If this test hangs, then there is a bug with getInstance() initializing the registry.
         registrySingleton.blockUntilLoaded();
     }
 
     @SmallTest
-    public void testDestroy_singleton() {
+    @Test(expected = UnsupportedOperationException.class)
+    public void destroy_singleton() {
         final PluginRegistry registrySingleton = PluginRegistry
-                .getInstance(getContext());
+                .getInstance(InstrumentationRegistry.getContext());
 
-        try {
-            registrySingleton.destroy();
-            fail();
-        } catch (UnsupportedOperationException e) {
-            // Expected exception
-        }
+        registrySingleton.destroy();
     }
 
     @MediumTest
-    public void testGetPluginMap_conditions() {
-        final PluginRegistry registry = new PluginRegistry(getContext(),
+    @Test
+    public void getPluginMap_conditions() {
+        final PluginRegistry registry = new PluginRegistry(InstrumentationRegistry.getContext(),
                 getIntentAction());
 
         try {
             registry.init();
 
             final Map<String, Plugin> conditions = registry.getPluginMap(PluginType.CONDITION);
-            assertNotNull(conditions);
+            assertThat(conditions, notNullValue());
         } finally {
             registry.destroy();
         }
     }
 
     @MediumTest
-    public void testGetPluginMap_settings() {
-        final PluginRegistry registry = new PluginRegistry(getContext(),
+    @Test
+    public void getPluginMap_settings() {
+        final PluginRegistry registry = new PluginRegistry(InstrumentationRegistry.getContext(),
                 getIntentAction());
 
         try {
             registry.init();
 
-            final Map<String, Plugin> conditions = registry.getPluginMap(PluginType.SETTING);
-            assertNotNull(conditions);
+            final Map<String, Plugin> settings = registry.getPluginMap(PluginType.SETTING);
+            assertThat(settings, notNullValue());
         } finally {
             registry.destroy();
         }
     }
 
     @SmallTest
-    public void testPeekPluginMap_non_blocking() {
-        final PluginRegistry registry = new PluginRegistry(getContext(),
+    @Test
+    public void peekPluginMap_non_blocking() {
+        final PluginRegistry registry = new PluginRegistry(InstrumentationRegistry.getContext(),
                 getIntentAction());
 
         try {
-            assertNull(registry.peekPluginMap(PluginType.CONDITION));
-            assertNull(registry.peekPluginMap(PluginType.SETTING));
+            assertThat(registry.peekPluginMap(PluginType.CONDITION), nullValue());
+            assertThat(registry.peekPluginMap(PluginType.SETTING), nullValue());
 
             registry.init();
         } finally {
@@ -132,30 +147,33 @@ public final class PluginRegistryTest extends AndroidTestCase {
     }
 
     @MediumTest
-    public void testPeekPluginMap_after_blocking() {
-        final PluginRegistry registry = new PluginRegistry(getContext(),
+    @Test
+    public void peekPluginMap_after_blocking() {
+        final PluginRegistry registry = new PluginRegistry(InstrumentationRegistry.getContext(),
                 getIntentAction());
 
         try {
             registry.init();
             registry.blockUntilLoaded();
 
-            assertNotNull(registry.peekPluginMap(PluginType.CONDITION));
-            assertNotNull(registry.peekPluginMap(PluginType.SETTING));
+            assertThat(registry.peekPluginMap(PluginType.CONDITION), notNullValue());
+            assertThat(registry.peekPluginMap(PluginType.SETTING), notNullValue());
         } finally {
             registry.destroy();
         }
     }
 
     @MediumTest
-    public void testLoadCompleteNotification() {
-        final PluginRegistry registry = new PluginRegistry(getContext(),
-                getIntentAction());
+    @Test
+    public void loadCompleteNotification() {
+        final String intentAction = getIntentAction();
 
-        final HandlerThread backgroundThread = ThreadUtil.newHandlerThread(getName(),
-                ThreadPriority.DEFAULT);
+        final PluginRegistry registry = new PluginRegistry(InstrumentationRegistry.getContext(),
+                intentAction);
+
+        final HandlerThread backgroundThread = ThreadUtil.newHandlerThread(intentAction,
+                ThreadUtil.ThreadPriority.DEFAULT);
         try {
-
             final CountDownLatch latch = new CountDownLatch(1);
 
             final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -166,18 +184,19 @@ public final class PluginRegistryTest extends AndroidTestCase {
                 }
             };
 
-            getContext().registerReceiver(receiver, new IntentFilter(getIntentAction()), null,
-                    new Handler(backgroundThread.getLooper()));
+            InstrumentationRegistry.getContext()
+                    .registerReceiver(receiver, new IntentFilter(intentAction), null,
+                            new Handler(backgroundThread.getLooper()));
 
             registry.init();
 
             try {
-                assertTrue(latch.await(REGISTRY_LOAD_WAIT_MILLIS, TimeUnit.MILLISECONDS));
+                assertThat(latch.await(REGISTRY_LOAD_WAIT_MILLIS, TimeUnit.MILLISECONDS), is(true));
             } catch (final InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
-            getContext().unregisterReceiver(receiver);
+            InstrumentationRegistry.getContext().unregisterReceiver(receiver);
         } finally {
             registry.destroy();
             backgroundThread.quit();
@@ -185,8 +204,9 @@ public final class PluginRegistryTest extends AndroidTestCase {
     }
 
     @NonNull
-    private String getIntentAction() {
+    private static String getIntentAction() {
         return String
-                .format(Locale.US, "com.twofortyfouram.locale.intent.%s", getName()); //$NON-NLS-1$
+                .format(Locale.US, "com.twofortyfouram.locale.intent.%s",
+                        UUID.randomUUID()); //$NON-NLS-1$
     }
 }

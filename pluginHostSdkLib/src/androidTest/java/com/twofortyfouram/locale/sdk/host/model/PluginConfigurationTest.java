@@ -16,108 +16,125 @@
 package com.twofortyfouram.locale.sdk.host.model;
 
 import android.os.Parcel;
-import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
-import android.test.MoreAsserts;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
+
+import com.twofortyfouram.locale.sdk.host.test.fixture.PluginConfigurationFixture;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public final class PluginConfigurationTest extends AndroidTestCase {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
-    /**
-     * Fixture to obtain a new plug-in configuration.
-     */
-    @NonNull
-    public static PluginConfiguration newPluginConfiguration() {
-        return new PluginConfiguration(false, false, false, false, false, false,
-                new LinkedList<String>());
+@RunWith(AndroidJUnit4.class)
+public final class PluginConfigurationTest {
+
+    @SmallTest
+    @Test
+    public void getIsBackwardsCompatibilityEnabled_false() {
+        assertThat(PluginConfigurationFixture.newPluginConfiguration()
+                .isBackwardsCompatibilityEnabled(), is(false));
     }
 
     @SmallTest
-    public void testGetIsBackwardsCompatibilityEnabled_false() {
-        assertFalse(newPluginConfiguration().isBackwardsCompatibilityEnabled());
-    }
-
-    @SmallTest
-    public void testGetIsBackwardsCompatibilityEnabled_true() {
+    @Test
+    public void getIsBackwardsCompatibilityEnabled_true() {
         final PluginConfiguration configuration = new PluginConfiguration(true, false, false,
                 false, false, false, new LinkedList<String>());
 
-        assertTrue(configuration.isBackwardsCompatibilityEnabled());
+        assertThat(configuration.isBackwardsCompatibilityEnabled(), is(true));
     }
 
     @SmallTest
-    public void testIsRequiresConnectivity_false() {
-        assertFalse(newPluginConfiguration().isRequiresConnectivity());
+    @Test
+    public void isRequiresConnectivity_false() {
+        assertThat(PluginConfigurationFixture.newPluginConfiguration().isRequiresConnectivity(),
+                is(false));
     }
 
     @SmallTest
-    public void testIsRequiresConnectivity_true() {
+    @Test
+    public void isRequiresConnectivity_true() {
         final PluginConfiguration configuration = new PluginConfiguration(false, true, false,
                 false, false, false, new LinkedList<String>());
 
-        assertTrue(configuration.isRequiresConnectivity());
-    }
-
-
-    @SmallTest
-    public void testIsDisruptsConnectivity_false() {
-        assertFalse(newPluginConfiguration().isDisruptsConnectivity());
+        assertThat(configuration.isRequiresConnectivity(),
+                is(true));
     }
 
     @SmallTest
-    public void testIsDisruptsConnectivity_true() {
+    @Test
+    public void isDisruptsConnectivity_false() {
+        assertThat(PluginConfigurationFixture.newPluginConfiguration().isDisruptsConnectivity(),
+                is(false));
+    }
+
+    @SmallTest
+    @Test
+    public void isDisruptsConnectivity_true() {
         final PluginConfiguration configuration = new PluginConfiguration(false, false, true,
                 false, false, false, new LinkedList<String>());
 
-        assertTrue(configuration.isDisruptsConnectivity());
+        assertThat(configuration.isDisruptsConnectivity(), is(true));
     }
 
     @SmallTest
-    public void testIsBuggy_false() {
-        assertFalse(newPluginConfiguration().isBuggy());
+    @Test
+    public void isBuggy_false() {
+        assertThat(PluginConfigurationFixture.newPluginConfiguration().isBuggy(), is(false));
     }
 
     @SmallTest
-    public void testIsBuggy_true() {
+    @Test
+    public void isBuggy_true() {
         final PluginConfiguration configuration = new PluginConfiguration(false, false, false,
                 true, false, false, new LinkedList<String>());
 
-        assertTrue(configuration.isBuggy());
+        assertThat(configuration.isBuggy(), is(true));
     }
 
     @SmallTest
-    public void testIsDrainsBattery_false() {
-        assertFalse(newPluginConfiguration().isDrainsBattery());
+    @Test
+    public void isDrainsBattery_false() {
+        assertThat(PluginConfigurationFixture.newPluginConfiguration().isDrainsBattery(),
+                is(false));
     }
 
     @SmallTest
-    public void testIsDrainsBattery_true() {
+    @Test
+    public void isDrainsBattery_true() {
         final PluginConfiguration configuration = new PluginConfiguration(false, false, false,
                 false, true, false, new LinkedList<String>());
 
-        assertTrue(configuration.isDrainsBattery());
-    }
-
-
-    @SmallTest
-    public void testIsBlacklisted_false() {
-        assertFalse(newPluginConfiguration().isBlacklisted());
+        assertThat(configuration.isDrainsBattery(), is(true));
     }
 
     @SmallTest
-    public void testIsBlacklisted_true() {
+    @Test
+    public void isBlacklisted_false() {
+        assertThat(PluginConfigurationFixture.newPluginConfiguration().isBlacklisted(), is(false));
+    }
+
+    @SmallTest
+    @Test
+    public void isBlacklisted_true() {
         final PluginConfiguration configuration = new PluginConfiguration(false, false, false,
                 false, false, true, new LinkedList<String>());
 
-        assertTrue(configuration.isBlacklisted());
+        assertThat(configuration.isBlacklisted(), is(true));
     }
 
     @SmallTest
-    public void testParcelable() {
-        final PluginConfiguration configuration = newPluginConfiguration();
+    @Test
+    public void parcelable() {
+        final PluginConfiguration configuration = PluginConfigurationFixture
+                .newPluginConfiguration();
 
         Parcel parcel = Parcel.obtain();
 
@@ -127,97 +144,114 @@ public final class PluginConfigurationTest extends AndroidTestCase {
             final PluginConfiguration unparceled = PluginConfiguration.CREATOR
                     .createFromParcel(parcel);
 
-            assertEquals(configuration, unparceled);
+            assertThat(unparceled, is(configuration));
         } finally {
             parcel.recycle();
         }
     }
 
     @SmallTest
-    public void testEqualsAndHashcode_same() {
-        final PluginConfiguration defaultConfiguration = newPluginConfiguration();
+    @Test
+    public void equals_same() {
+        final PluginConfiguration defaultConfiguration = PluginConfigurationFixture
+                .newPluginConfiguration();
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultConfiguration, defaultConfiguration, true);
+        assertEquals(defaultConfiguration, defaultConfiguration);
     }
 
     @SmallTest
-    public void testEqualsAndHashcode_equal() {
-        final PluginConfiguration defaultConfiguration = newPluginConfiguration();
+    @Test
+    public void equals_equal() {
+        final PluginConfiguration defaultConfiguration = PluginConfigurationFixture
+                .newPluginConfiguration();
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultConfiguration, newPluginConfiguration(),
-                true);
+        assertEquals(defaultConfiguration, PluginConfigurationFixture
+                .newPluginConfiguration());
     }
 
     @SmallTest
-    public void testEqualsAndHashcode_different_backwards_compatibility() {
-        final PluginConfiguration defaultConfiguration = newPluginConfiguration();
+    @Test
+    public void equals_different_backwards_compatibility() {
+        final PluginConfiguration defaultConfiguration = PluginConfigurationFixture
+                .newPluginConfiguration();
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultConfiguration,
+        assertNotEquals(defaultConfiguration,
                 new PluginConfiguration(true, false, false, false, false, false,
-                        new LinkedList<String>()), false
-        );
+                        new LinkedList<String>()));
     }
 
     @SmallTest
-    public void testEqualsAndHashcode_different_requires_connectivity() {
-        final PluginConfiguration defaultConfiguration = newPluginConfiguration();
+    @Test
+    public void equals_different_requires_connectivity() {
+        final PluginConfiguration defaultConfiguration = PluginConfigurationFixture
+                .newPluginConfiguration();
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultConfiguration,
+        assertNotEquals(defaultConfiguration,
                 new PluginConfiguration(false, true, false, false, false, false,
-                        new LinkedList<String>()), false
+                        new LinkedList<String>())
         );
     }
 
     @SmallTest
-    public void testEqualsAndHashcode_different_disrupts_connectivity() {
-        final PluginConfiguration defaultConfiguration = newPluginConfiguration();
+    @Test
+    public void equals_different_disrupts_connectivity() {
+        final PluginConfiguration defaultConfiguration = PluginConfigurationFixture
+                .newPluginConfiguration();
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultConfiguration,
+        assertNotEquals(defaultConfiguration,
                 new PluginConfiguration(false, false, true, false, false, false,
-                        new LinkedList<String>()), false
+                        new LinkedList<String>())
         );
     }
 
     @SmallTest
-    public void testEqualsAndHashcode_different_buggy() {
-        final PluginConfiguration defaultConfiguration = newPluginConfiguration();
+    @Test
+    public void equals_different_buggy() {
+        final PluginConfiguration defaultConfiguration = PluginConfigurationFixture
+                .newPluginConfiguration();
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultConfiguration,
+        assertNotEquals(defaultConfiguration,
                 new PluginConfiguration(false, false, false, true, false, false,
-                        new LinkedList<String>()), false
+                        new LinkedList<String>())
         );
     }
 
     @SmallTest
-    public void testEqualsAndHashcode_different_drains_battery() {
-        final PluginConfiguration defaultConfiguration = newPluginConfiguration();
+    @Test
+    public void equals_different_drains_battery() {
+        final PluginConfiguration defaultConfiguration = PluginConfigurationFixture
+                .newPluginConfiguration();
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultConfiguration,
+        assertNotEquals(defaultConfiguration,
                 new PluginConfiguration(false, false, false, false, true, false,
-                        new LinkedList<String>()), false
+                        new LinkedList<String>())
         );
     }
 
     @SmallTest
-    public void testEqualsAndHashcode_different_blacklisted() {
-        final PluginConfiguration defaultConfiguration = newPluginConfiguration();
+    @Test
+    public void equals_different_blacklisted() {
+        final PluginConfiguration defaultConfiguration = PluginConfigurationFixture
+                .newPluginConfiguration();
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultConfiguration,
+        assertNotEquals(defaultConfiguration,
                 new PluginConfiguration(false, false, false, false, false, true,
-                        new LinkedList<String>()), false
+                        new LinkedList<String>())
         );
     }
 
     @SmallTest
-    public void testEqualsAndHashcode_different_alternatives() {
-        final PluginConfiguration defaultConfiguration = newPluginConfiguration();
+    @Test
+    public void equals_different_alternatives() {
+        final PluginConfiguration defaultConfiguration = PluginConfigurationFixture
+                .newPluginConfiguration();
 
         final List<String> nonEmptyList = new LinkedList<String>();
         nonEmptyList.add("foo");
 
-        MoreAsserts.checkEqualsAndHashCodeMethods(defaultConfiguration,
+        assertNotEquals(defaultConfiguration,
                 new PluginConfiguration(false, false, false, false, false, false,
-                        nonEmptyList), false
+                        nonEmptyList)
         );
     }
 }

@@ -6,6 +6,8 @@ general:
 machine:
   java:
     version: oraclejdk8
+  environment:
+    GRADLE_OPTS: '-Dorg.gradle.daemon=true'
 
 dependencies:
   pre:

@@ -58,6 +58,14 @@ import static com.twofortyfouram.assertion.Assertions.assertNotNull;
 public abstract class AbstractPluginEditFragment extends Fragment implements IPluginEditFragment {
 
     /**
+     * Type: {@code boolean}.
+     */
+    @NonNull
+    private static final String STATE_BOOLEAN_IS_SAVED_INSTANCE =
+            AbstractSupportPluginEditFragment.class.getName() + ".state.BOOLEAN_IS_SAVED_INSTANCE";
+    //$NON-NLS
+
+    /**
      * Request code for launching a plug-in "edit" Activity.  Subclasses cannot use this request
      * code.
      */
@@ -112,25 +120,36 @@ public abstract class AbstractPluginEditFragment extends Fragment implements IPl
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String breadcrumb = null;
-        final ActionBar ab = getActivity().getActionBar();
-        if (null != ab) {
-            final CharSequence subtitle = ab.getSubtitle();
-            if (null != subtitle) {
-                breadcrumb = subtitle.toString();
+        if (null == savedInstanceState) {
+            String breadcrumb = null;
+            final ActionBar ab = getActivity().getActionBar();
+            if (null != ab) {
+                final CharSequence subtitle = ab.getSubtitle();
+                if (null != subtitle) {
+                    breadcrumb = subtitle.toString();
+                }
+            }
+
+            final Intent i = PluginEditDelegate.getPluginStartIntent(mPlugin,
+                    mPreviousPluginInstanceData, breadcrumb);
+            try {
+                startActivityForResult(i, REQUEST_CODE_EDIT_PLUGIN);
+            } catch (final ActivityNotFoundException e) {
+                handleErrorsInternal(mPlugin,
+                        EnumSet.of(PluginErrorEdit.ACTIVITY_NOT_FOUND_EXCEPTION));
+            } catch (final SecurityException e) {
+                handleErrorsInternal(mPlugin, EnumSet.of(PluginErrorEdit.SECURITY_EXCEPTION));
             }
         }
+    }
 
-        final Intent i = PluginEditDelegate.getPluginStartIntent(mPlugin,
-                mPreviousPluginInstanceData, breadcrumb);
-        try {
-            startActivityForResult(i, REQUEST_CODE_EDIT_PLUGIN);
-        } catch (final ActivityNotFoundException e) {
-            handleErrorsInternal(mPlugin,
-                    EnumSet.of(PluginErrorEdit.ACTIVITY_NOT_FOUND_EXCEPTION));
-        } catch (final SecurityException e) {
-            handleErrorsInternal(mPlugin, EnumSet.of(PluginErrorEdit.SECURITY_EXCEPTION));
-        }
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // It appears necessary to put *something* in the bundle so that savedInstanceState will be
+        // non-null in onCreate() if the fragment is re-created.
+        outState.putBoolean(STATE_BOOLEAN_IS_SAVED_INSTANCE, true); //$NON-NLS
     }
 
     /**
@@ -145,7 +164,8 @@ public abstract class AbstractPluginEditFragment extends Fragment implements IPl
                 case Activity.RESULT_OK: {
                     Lumberjack.always("Received result code RESULT_OK"); //$NON-NLS-1$
 
-                    final EnumSet<PluginErrorEdit> errors = PluginEditDelegate.isIntentValid(intent, mPlugin);
+                    final EnumSet<PluginErrorEdit> errors = PluginEditDelegate
+                            .isIntentValid(intent, mPlugin);
                     if (errors.isEmpty()) {
                         final Bundle newBundle = intent
                                 .getBundleExtra(com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE);

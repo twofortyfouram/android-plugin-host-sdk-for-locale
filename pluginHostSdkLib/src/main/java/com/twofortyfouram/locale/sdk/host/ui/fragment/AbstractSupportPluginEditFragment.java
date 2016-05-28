@@ -51,11 +51,21 @@ import static com.twofortyfouram.assertion.Assertions.assertNotNull;
  * <p>
  * When starting this fragment, the argument
  * {@link IPluginEditFragment#ARG_EXTRA_PARCELABLE_CURRENT_PLUGIN} is required. The optional
- * argument {@link IPluginEditFragment#ARG_EXTRA_PARCELABLE_PREVIOUS_PLUGIN_INSTANCE_DATA} is used if an old plug-in
+ * argument {@link IPluginEditFragment#ARG_EXTRA_PARCELABLE_PREVIOUS_PLUGIN_INSTANCE_DATA} is used
+ * if an old plug-in
  * instance is being edited.
  */
 @NotThreadSafe
-public abstract class AbstractSupportPluginEditFragment extends Fragment implements IPluginEditFragment {
+public abstract class AbstractSupportPluginEditFragment extends Fragment
+        implements IPluginEditFragment {
+
+    /**
+     * Type: {@code boolean}.
+     */
+    @NonNull
+    private static final String STATE_BOOLEAN_IS_SAVED_INSTANCE =
+            AbstractSupportPluginEditFragment.class.getName() + ".state.BOOLEAN_IS_SAVED_INSTANCE";
+    //$NON-NLS
 
     /**
      * Request code for launching a plug-in "edit" Activity.  Subclasses cannot use this request
@@ -108,25 +118,37 @@ public abstract class AbstractSupportPluginEditFragment extends Fragment impleme
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String breadcrumb = null;
-        if (AndroidSdkVersion.isAtLeastSdk(Build.VERSION_CODES.HONEYCOMB)) {
-            breadcrumb = getBreadcrumbHoneycomb();
-        } else {
-            final CharSequence title = getActivity().getTitle();
-            if (null != title) {
-                breadcrumb = title.toString();
+        if (null == savedInstanceState) {
+            String breadcrumb = null;
+            if (AndroidSdkVersion.isAtLeastSdk(Build.VERSION_CODES.HONEYCOMB)) {
+                breadcrumb = getBreadcrumbHoneycomb();
+            } else {
+                final CharSequence title = getActivity().getTitle();
+                if (null != title) {
+                    breadcrumb = title.toString();
+                }
+            }
+
+            final Intent i = PluginEditDelegate
+                    .getPluginStartIntent(mPlugin, mPreviousPluginInstanceData, breadcrumb);
+            try {
+                startActivityForResult(i, REQUEST_CODE_EDIT_PLUGIN);
+            } catch (final ActivityNotFoundException e) {
+                handleErrorsInternal(mPlugin,
+                        EnumSet.of(PluginErrorEdit.ACTIVITY_NOT_FOUND_EXCEPTION));
+            } catch (final SecurityException e) {
+                handleErrorsInternal(mPlugin, EnumSet.of(PluginErrorEdit.SECURITY_EXCEPTION));
             }
         }
+    }
 
-        final Intent i = PluginEditDelegate.getPluginStartIntent(mPlugin, mPreviousPluginInstanceData, breadcrumb);
-        try {
-            startActivityForResult(i, REQUEST_CODE_EDIT_PLUGIN);
-        } catch (final ActivityNotFoundException e) {
-            handleErrorsInternal(mPlugin,
-                    EnumSet.of(PluginErrorEdit.ACTIVITY_NOT_FOUND_EXCEPTION));
-        } catch (final SecurityException e) {
-            handleErrorsInternal(mPlugin, EnumSet.of(PluginErrorEdit.SECURITY_EXCEPTION));
-        }
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // It appears necessary to put *something* in the bundle so that savedInstanceState will be
+        // non-null in onCreate() if the fragment is re-created.
+        outState.putBoolean(STATE_BOOLEAN_IS_SAVED_INSTANCE, true); //$NON-NLS
     }
 
     @Nullable
@@ -157,7 +179,8 @@ public abstract class AbstractSupportPluginEditFragment extends Fragment impleme
                 case Activity.RESULT_OK: {
                     Lumberjack.always("Received result code RESULT_OK"); //$NON-NLS-1$
 
-                    final EnumSet<PluginErrorEdit> errors = PluginEditDelegate.isIntentValid(intent, mPlugin);
+                    final EnumSet<PluginErrorEdit> errors = PluginEditDelegate
+                            .isIntentValid(intent, mPlugin);
                     if (errors.isEmpty()) {
                         final Bundle newBundle = intent
                                 .getBundleExtra(com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE);

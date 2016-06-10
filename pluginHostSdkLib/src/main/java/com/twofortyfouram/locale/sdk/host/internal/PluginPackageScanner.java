@@ -169,7 +169,7 @@ public final class PluginPackageScanner {
         }
 
         List<ResolveInfo> activities = packageManager.queryIntentActivities(activityIntent,
-                PackageManager.GET_ACTIVITIES);
+                0);
         /*
          * Although the documentation for queryIntentActivities says that it will return an empty
          * list, this is not always the case for older API levels.
@@ -213,7 +213,7 @@ public final class PluginPackageScanner {
         }
 
         List<ResolveInfo> receivers = packageManager.queryBroadcastReceivers(receiverIntent,
-                PackageManager.GET_INTENT_FILTERS);
+                0);
         /*
          * Although the documentation for queryBroadcastReceivers says that it will return an empty
          * list, this is not always the case for older API levels.

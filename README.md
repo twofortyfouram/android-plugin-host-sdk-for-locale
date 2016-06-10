@@ -25,7 +25,7 @@ The build.gradle repositories section would look something like the following:
 And the dependencies section would look something like this:
     
     dependencies {
-        compile group:'com.twofortyfouram', name:'android-plugin-host-sdk-for-locale', version:'[2.0.0,3.0['
+        compile group:'com.twofortyfouram', name:'android-plugin-host-sdk-for-locale', version:'[2.0.1,3.0['
     }
 
 
@@ -49,5 +49,5 @@ PluginInstanceData has getters for [getType()](http://twofortyfouram.github.io/a
 
 # History
 * 1.0.0: Initial release
-* 2.0.0
-    * Update transitive dependency on [plug-in-client-sdk-for-locale](http://twofortyfouram.github.io/android-plugin-client-sdk-for-locale) to a major new version.  Although the host SDK APIs didn't change, the dependency change could break downstream clients hence a major new version.
+* 2.0.0: Update transitive dependency on [plug-in-client-sdk-for-locale](http://twofortyfouram.github.io/android-plugin-client-sdk-for-locale) to a major new version.  Although the host SDK APIs didn't change, the dependency change could break downstream clients hence a major new version.
+* 2.0.1: Fix state management of AbstractPluginEditFragment and AbstractSupportPluginEditFragment.  Fix PluginPackageScanner bug detected by lint.

@@ -13,7 +13,7 @@ android:
 
     - android-22
     - sys-img-armeabi-v7a-android-22
-    - android-23
+    - android-24
   licenses:
     - 'android-sdk-license-.*'
 

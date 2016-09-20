@@ -16,7 +16,7 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"
     - echo y | android update sdk --no-ui --all --filter "platform-tools"
     - echo y | android update sdk --no-ui --all --filter "tools"
-    - echo y | android update sdk --no-ui --all --filter "build-tools-23.0.3"
+    - echo y | android update sdk --no-ui --all --filter "build-tools-24.0.2"
   override:
     - ./gradlew resolveAllDependencies
   cache_directories:

@@ -9,7 +9,7 @@ JavaDocs for the library are published [here](http://twofortyfouram.github.io/an
 
 
 # Compatibility
-The SDK is compatible and optimized for Android API Level 8 and above.  Note, however, consuming the SDK requires at least Android Gradle Plugin 1.3.0. (This is due to a manifest placeholder in the AAR's manifest.)  For backwards compatibility, there are support-v4 versions of the Fragment and Loader classes in the SDK.
+The SDK is compatible and optimized for Android API Level 9 and above.  Note, however, consuming the SDK requires at least Android Gradle Plugin 1.3.0. (This is due to a manifest placeholder in the AAR's manifest.)  For backwards compatibility, there are support-v4 versions of the Fragment and Loader classes in the SDK.
 
 
 # Download

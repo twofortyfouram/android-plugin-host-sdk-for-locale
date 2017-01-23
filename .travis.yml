@@ -31,7 +31,7 @@ before_script:
 
 script:
   - adb logcat > logcat.txt & # write logs to a file, to make test failure debugging easier
-  - TERM=dumb ./gradlew -PIS_PREDEXING_ENABLED=false assemble connectedCheck lint findbugs releaseJavadoc dependencyUpdates --stacktrace
+  - TERM=dumb ./gradlew assemble connectedCheck lint findbugs releaseJavadoc dependencyUpdates --stacktrace
 
 after_failure:
   - cat logcat.txt

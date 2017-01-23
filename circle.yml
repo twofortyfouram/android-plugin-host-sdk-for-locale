@@ -42,7 +42,7 @@ test:
     - adb logcat:
         background: true
 
-    - ./gradlew -PIS_PREDEXING_ENABLED=false assemble connectedCheck lint findbugs releaseJavadoc dependencyUpdates --stacktrace --profile
+    - ./gradlew assemble connectedCheck lint findbugs releaseJavadoc dependencyUpdates --stacktrace --profile
 
     # copy the artifacts and test reports
     - cp -r pluginHostSdkLib/build/outputs $CIRCLE_ARTIFACTS

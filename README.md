@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/twofortyfouram/android-plugin-host-sdk-for-locale.png?branch=master)](https://travis-ci.org/twofortyfouram/android-plugin-host-sdk-for-locale)
+[![CircleCI](https://circleci.com/gh/twofortyfouram/android-plugin-host-sdk-for-locale.svg?style=svg)](https://circleci.com/gh/twofortyfouram/android-plugin-host-sdk-for-locale)
 
 # Overview
 [Locale](https://play.google.com/store/apps/details?id=com.twofortyfouram.locale) allows developers to create plug-in conditions and settings through the [Locale Developer Platform](http://www.twofortyfouram.com/developer).  Interaction between Locale (host) and plug-ins (client) occurs via an Intent-based API.  This repo contains an SDK that implements the host functionality defined by the Intent-based API.  Although there are multiple ways to approach building a plug-in host, we recommend starting with this SDK layer.

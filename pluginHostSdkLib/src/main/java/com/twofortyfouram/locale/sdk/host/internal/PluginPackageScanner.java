@@ -26,11 +26,10 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.twofortyfouram.annotation.Slow;
 import com.twofortyfouram.annotation.Slow.Speed;
-import com.twofortyfouram.annotation.VisibleForTesting;
-import com.twofortyfouram.annotation.VisibleForTesting.Visibility;
 import com.twofortyfouram.locale.sdk.host.model.Plugin;
 import com.twofortyfouram.locale.sdk.host.model.PluginConfiguration;
 import com.twofortyfouram.locale.sdk.host.model.PluginErrorRegister;
@@ -155,7 +154,7 @@ public final class PluginPackageScanner {
      * filter. May return an empty collection.
      */
     @NonNull
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ static Collection<ResolveInfo> findActivities(@NonNull final Context context,
             @NonNull final PluginType type, @Nullable final String packageToFilterFor) {
         assertNotNull(context, "context"); //$NON-NLS-1$
@@ -199,7 +198,7 @@ public final class PluginPackageScanner {
      * package filter. May return an empty collection.
      */
     @NonNull
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ static List<ResolveInfo> findReceivers(@NonNull final Context context,
             @NonNull final PluginType type, @Nullable final String packageToFilterFor) {
         assertNotNull(context, "context"); //$NON-NLS-1$
@@ -283,7 +282,7 @@ public final class PluginPackageScanner {
      * @return Set of errors detected in the plug-in. If the plug-in has no
      * errors, then it is valid.
      */
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ static EnumSet<PluginErrorRegister> checkPluginForErrors(
             @NonNull final Context context,
             @NonNull final PluginType type,
@@ -346,7 +345,7 @@ public final class PluginPackageScanner {
         return errors;
     }
 
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ static boolean isInstallLocationCorrect(@NonNull final Context context,
             @NonNull final ResolveInfo resolveInfo) {
         assertNotNull(context, "context"); //$NON-NLS-1$
@@ -400,7 +399,7 @@ public final class PluginPackageScanner {
      * @return True if the plug-in is targeting at least the same SDK version of
      * the host application.
      */
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ static boolean isTargetSdkCorrect(@NonNull final Context context,
             @NonNull final ResolveInfo info) {
         assertNotNull(context, "context"); //$NON-NLS-1$
@@ -422,7 +421,7 @@ public final class PluginPackageScanner {
      * @return True if the application is enabled. False if the application is
      * disabled.
      */
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ static boolean isApplicationEnabled(@NonNull final ResolveInfo info) {
         assertNotNull(info, "info"); //$NON-NLS-1$
 
@@ -434,7 +433,7 @@ public final class PluginPackageScanner {
      * @return True if the Activity is enabled. False if the Activity is
      * disabled.
      */
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ static boolean isComponentEnabled(@NonNull final ResolveInfo info) {
         assertNotNull(info, "info"); //$NON-NLS-1$
 
@@ -446,7 +445,7 @@ public final class PluginPackageScanner {
      * @return True if the component is exported. False if the component is not
      * exported.
      */
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ static boolean isComponentExported(@NonNull final ResolveInfo info) {
         assertNotNull(info, "info"); //$NON-NLS-1$
 
@@ -458,7 +457,7 @@ public final class PluginPackageScanner {
      * @return True if the component does not require a permission the host does
      * not have.
      */
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ static boolean isComponentPermissionGranted(@NonNull final Context context,
             @NonNull final ResolveInfo info) {
         assertNotNull(context, "context"); //$NON-NLS-1$

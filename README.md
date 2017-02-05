@@ -51,3 +51,4 @@ PluginInstanceData has getters for [getType()](https://twofortyfouram.github.io/
 * 1.0.0: Initial release
 * 2.0.0: Update transitive dependency on [plug-in-client-sdk-for-locale](https://twofortyfouram.github.io/android-plugin-client-sdk-for-locale) to a major new version.  Although the host SDK APIs didn't change, the dependency change could break downstream clients hence a major new version.
 * 2.0.1: Fix state management of AbstractPluginEditFragment and AbstractSupportPluginEditFragment.  Fix PluginPackageScanner bug detected by lint.
+* 2.0.2: Fix detection of changing plug-ins after initial scan

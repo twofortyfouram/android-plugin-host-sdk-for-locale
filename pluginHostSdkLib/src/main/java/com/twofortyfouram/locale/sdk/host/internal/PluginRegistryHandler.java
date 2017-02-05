@@ -26,11 +26,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.twofortyfouram.annotation.Slow;
 import com.twofortyfouram.annotation.Slow.Speed;
-import com.twofortyfouram.annotation.VisibleForTesting;
-import com.twofortyfouram.annotation.VisibleForTesting.Visibility;
 import com.twofortyfouram.locale.sdk.host.model.Plugin;
 import com.twofortyfouram.locale.sdk.host.model.PluginType;
 import com.twofortyfouram.log.Lumberjack;
@@ -123,7 +122,7 @@ public final class PluginRegistryHandler extends Handler {
      * This field is lazily initialized. This map is mutable.
      */
     @Nullable
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ volatile Map<String, Plugin> mMutableConditionMap = null;
 
     /**
@@ -132,7 +131,7 @@ public final class PluginRegistryHandler extends Handler {
      * This field is lazily initialized. This map is mutable.
      */
     @Nullable
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */ volatile Map<String, Plugin> mMutableSettingMap = null;
 
     /**
@@ -203,7 +202,7 @@ public final class PluginRegistryHandler extends Handler {
     /**
      * Constructs a registry with no permission on the broadcast intent.
      */
-    @VisibleForTesting(Visibility.TEST)
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     /*package*/ PluginRegistryHandler(@NonNull final Looper looper,
             @NonNull final Context context,
             @NonNull final String notificationAction) {
@@ -220,7 +219,7 @@ public final class PluginRegistryHandler extends Handler {
 
     @Override
     public void handleMessage(@NonNull final Message message) {
-        Lumberjack.v("Got %s", message); //$NON-NLS-1$
+        Lumberjack.v("Got what=%s %s", nameThatMessage(message.what), message); //$NON-NLS-1$
 
         switch (message.what) {
             case MESSAGE_INIT: {
@@ -269,12 +268,40 @@ public final class PluginRegistryHandler extends Handler {
     }
 
     /**
+     * @param what Message what
+     * @return Human-readable string of {@code what}.  Useful for debugging.
+     */
+    @NonNull
+    private static String nameThatMessage(final int what) {
+        switch (what) {
+            case MESSAGE_INIT: {
+                return "MESSAGE_INIT"; //$NON-NLS
+            }
+            case MESSAGE_PACKAGE_ADDED: {
+                return "MESSAGE_PACKAGE_ADDED"; //$NON-NLS
+            }
+            case MESSAGE_PACKAGE_REMOVED: {
+                return "MESSAGE_PACKAGE_REMOVED"; //$NON-NLS
+            }
+            case MESSAGE_PACKAGE_CHANGED: {
+                return "MESSAGE_PACKAGE_CHANGED"; //$NON-NLS
+            }
+            case MESSAGE_DESTROY: {
+                return "MESSAGE_DESTROY"; //$NON-NLS
+            }
+            default: {
+                return "UNKNOWN"; //$NON-NLS
+            }
+        }
+    }
+
+    /**
      * Initially loads the registry.
      *
      * @see #MESSAGE_INIT
      */
     @Slow(Speed.SECONDS)
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */void handleInit() {
         mReceiverHandlerThread = ThreadUtil.newHandlerThread(
                 RegistryReceiver.class.getName(),
@@ -317,7 +344,7 @@ public final class PluginRegistryHandler extends Handler {
      *
      * @see #MESSAGE_DESTROY
      */
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */void handleDestroy() {
         mContext.unregisterReceiver(mReceiver);
         mReceiverHandlerThread.quit();
@@ -335,7 +362,7 @@ public final class PluginRegistryHandler extends Handler {
      * @see #MESSAGE_PACKAGE_REMOVED
      */
     @NonNull
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */PackageResult handlePackageRemoved(@NonNull final String packageName) {
         assertNotNull(packageName, "packageName"); //$NON-NLS-1$
 
@@ -359,7 +386,7 @@ public final class PluginRegistryHandler extends Handler {
      * @see #MESSAGE_PACKAGE_ADDED
      */
     @NonNull
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */PackageResult handlePackageAdded(@NonNull final String packageName) {
         assertNotNull(packageName, "packageName"); //$NON-NLS-1$
 
@@ -383,7 +410,7 @@ public final class PluginRegistryHandler extends Handler {
      * @see #MESSAGE_PACKAGE_CHANGED
      */
     @NonNull
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */PackageResult handlePackageChanged(@NonNull final String packageName) {
         assertNotNull(packageName, "packageName"); //$NON-NLS-1$
 
@@ -647,18 +674,24 @@ public final class PluginRegistryHandler extends Handler {
 
             final String action = intent.getAction();
 
-            if (Intent.ACTION_PACKAGE_ADDED.equals(action) || Intent.ACTION_PACKAGE_REMOVED
+            if (Intent.ACTION_PACKAGE_ADDED.equals(action)) {
+                final String changedPackage = getChangedPackage(intent);
+
+                if (!isReplacing(intent)) {
+                    sendPackageAddedMessage(changedPackage);
+                }
+            } else if (Intent.ACTION_PACKAGE_REMOVED
                     .equals(action)) {
                 final String changedPackage = getChangedPackage(intent);
 
                 if (!isReplacing(intent)) {
-                    sendChangedPackageMessage(changedPackage);
+                    sendPackageRemovedMessage(changedPackage);
                 }
             } else if (Intent.ACTION_PACKAGE_REPLACED.equals(action) || Intent
                     .ACTION_PACKAGE_CHANGED.equals(action)) {
                 final String changedPackage = getChangedPackage(intent);
 
-                sendChangedPackageMessage(changedPackage);
+                sendPackageChangedMessage(changedPackage);
             } else if (Intent.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE.equals(action) || Intent
                     .ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE.equals(action)) {
                 final String[] changedPackages = intent
@@ -666,7 +699,7 @@ public final class PluginRegistryHandler extends Handler {
 
                 if (null != changedPackages) {
                     for (final String packageName : changedPackages) {
-                        sendChangedPackageMessage(packageName);
+                        sendPackageChangedMessage(packageName);
                     }
                 }
             }
@@ -678,7 +711,8 @@ public final class PluginRegistryHandler extends Handler {
          * {@link Intent#EXTRA_REPLACING} with a value of true.
          */
         private boolean isReplacing(@NonNull final Intent intent) {
-            return !intent.getBooleanExtra(Intent.EXTRA_REPLACING, false);
+            final boolean isReplacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false);
+            return isReplacing;
         }
 
         @Nullable
@@ -694,10 +728,24 @@ public final class PluginRegistryHandler extends Handler {
             return changedPackage;
         }
 
-        private void sendChangedPackageMessage(@Nullable final String packageName) {
+        private void sendPackageAddedMessage(@Nullable final String packageName) {
             if (null != packageName) {
                 sendMessage(obtainMessage(
                         MESSAGE_PACKAGE_ADDED, packageName));
+            }
+        }
+
+        private void sendPackageRemovedMessage(@Nullable final String packageName) {
+            if (null != packageName) {
+                sendMessage(obtainMessage(
+                        MESSAGE_PACKAGE_REMOVED, packageName));
+            }
+        }
+
+        private void sendPackageChangedMessage(@Nullable final String packageName) {
+            if (null != packageName) {
+                sendMessage(obtainMessage(
+                        MESSAGE_PACKAGE_CHANGED, packageName));
             }
         }
     }

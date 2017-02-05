@@ -1,16 +1,17 @@
 /*
  * android-plugin-host-sdk-for-locale https://github.com/twofortyfouram/android-plugin-host-sdk-for-locale
- * Copyright 2015 two forty four a.m. LLC
+ * Copyright (C) 2009–2017 two forty four a.m. LLC
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the
- * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.twofortyfouram.locale.sdk.host.api;
@@ -21,9 +22,8 @@ import android.os.Build;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
-import com.twofortyfouram.annotation.VisibleForTesting;
-import com.twofortyfouram.annotation.VisibleForTesting.Visibility;
 import com.twofortyfouram.locale.sdk.host.internal.PluginRegistryHandler;
 import com.twofortyfouram.locale.sdk.host.model.Plugin;
 import com.twofortyfouram.locale.sdk.host.model.PluginType;
@@ -161,7 +161,7 @@ public final class PluginRegistry {
      * @param notificationAction Intent action to broadcast when the registry
      *                           changes.
      */
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */PluginRegistry(@NonNull final Context context,
             @NonNull final String notificationAction) {
         assertNotNull(context, "context"); //$NON-NLS-1$
@@ -181,7 +181,7 @@ public final class PluginRegistry {
      * After construction, this method is called to begin initializing the
      * registry on a background thread.
      */
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */void init() {
         final boolean isSuccessful = mHandler.sendMessage(mHandler.obtainMessage(
                 PluginRegistryHandler.MESSAGE_INIT, mLoadLatch));
@@ -194,7 +194,7 @@ public final class PluginRegistry {
     /**
      * Blocks until the registry is initially loaded.
      */
-    @VisibleForTesting(Visibility.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /* package */void blockUntilLoaded() {
         try {
             mLoadLatch.await();
@@ -214,7 +214,7 @@ public final class PluginRegistry {
      *                                       the same instance returned by {@link #getInstance(Context)}.
      */
     @SuppressLint("NewApi")
-    @VisibleForTesting(Visibility.TEST)
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     /* package */ void destroy() {
         // OK to suppress inspection; if this reference is the singleton, then sRegistry is
         // guaranteed to have been assigned.

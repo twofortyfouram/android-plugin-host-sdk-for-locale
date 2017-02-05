@@ -230,8 +230,7 @@ public final class Setting {
                 }
 
                 Lumberjack.v("Received %s", intent); //$NON-NLS-1$
-            }
-            finally {
+            } finally {
                 mLatch.countDown();
             }
         }

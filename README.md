@@ -1,5 +1,6 @@
 [![CircleCI](https://circleci.com/gh/twofortyfouram/android-plugin-host-sdk-for-locale.svg?style=svg)](https://circleci.com/gh/twofortyfouram/android-plugin-host-sdk-for-locale)
 
+
 # Overview
 [Locale](https://play.google.com/store/apps/details?id=com.twofortyfouram.locale) allows developers to create plug-in conditions and settings through the [Locale Developer Platform](http://www.twofortyfouram.com/developer).  Interaction between Locale (host) and plug-ins (client) occurs via an Intent-based API.  This repo contains an SDK that implements the host functionality defined by the Intent-based API.  Although there are multiple ways to approach building a plug-in host, we recommend starting with this SDK layer.
 
@@ -25,8 +26,12 @@ The build.gradle repositories section would look something like the following:
 And the dependencies section would look something like this:
     
     dependencies {
-        compile group:'com.twofortyfouram', name:'android-plugin-host-sdk-for-locale', version:'[2.0.1,3.0['
+        compile group:'com.twofortyfouram', name:'android-plugin-host-sdk-for-locale', version:'[2.0.2,3.0['
     }
+
+
+# Contributing
+The Continuous Integration setup is using Firebase Test Lab.  If forking this project, provide your own [Firebase Test Lab service account](https://firebase.google.com/docs/test-lab/continuous) and provide the necessary environment variables.
 
 
 # Creating a Host
@@ -46,6 +51,7 @@ To edit a Plugin, the host instantiates a subclass of [AbstractPluginEditFragmen
 The host fires PluginInstanceData to a plug-in, via one of the two controller objects [Condition](https://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/api/Condition.html) or [Setting](https://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/api/Setting.html).
 
 PluginInstanceData has getters for [getType()](https://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/model/PluginType.html) and [getRegistryName()](https://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/model/PluginInstanceData.html#getRegistryName--).  Those two getters provide the keys necessary to look up the associated Plugin from the PluginRegistry, enabling the host to instantiate [Condition](https://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/api/Condition.html) or [Setting](https://twofortyfouram.github.io/android-plugin-host-sdk-for-locale/com/twofortyfouram/locale/sdk/host/api/Setting.html).
+
 
 # History
 * 1.0.0: Initial release

@@ -1,9 +1,6 @@
 # This improves obfuscation and moves non-public classes to their own namespace.
 -repackageclasses 'com.twofortyfouram.locale.sdk.host.internal'
 
-# Workaround for https://code.google.com/p/android/issues/detail?id=67587
--keeppackagenames !**
-
 # This makes it easier to autocomplete methods in an IDE using this obfuscated library.
 -keepparameternames
 
